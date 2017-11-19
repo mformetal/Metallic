@@ -4,11 +4,13 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
 import mformetal.metallic.R
 import mformetal.metallic.core.BaseActivity
+import mformetal.metallic.domain.Artist
 import javax.inject.Inject
 
 /**
@@ -22,12 +24,17 @@ class OnboardingActivity : BaseActivity() {
     lateinit var viewModel : OnboardingViewModel
 
     @BindView(R.id.recycler) lateinit var recycler : RecyclerView
+    lateinit var adapter : ArtistsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.onboarding)
         ButterKnife.bind(this)
+
+        recycler.layoutManager = LinearLayoutManager(this)
+        adapter = ArtistsAdapter(mutableListOf())
+        recycler.adapter = adapter
 
         app.component
                 .onboarding(OnboardingActivityModule())
@@ -36,8 +43,8 @@ class OnboardingActivity : BaseActivity() {
         viewModel = ViewModelProviders.of(this, factory)[OnboardingViewModel::class.java]
 
         viewModel.observeArtists()
-                .observe(this, Observer<List<String>> {
-                    it
+                .observe(this, Observer<Artist> {
+                    adapter.add(it!!)
                 })
     }
 }

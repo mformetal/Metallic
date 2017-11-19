@@ -24,7 +24,7 @@ class PlayMusicImporter @Inject constructor(context: Context) {
     }
 
     private fun getArtists() : Flowable<Artist> {
-        val observable : Flowable<Artist> = Flowable.create({ emitter ->
+       return Flowable.create<Artist>({ emitter ->
             val artistCursor = contentResolver.query(URI,
                     arrayOf(MediaStore.Audio.Artists.ARTIST),
                     null, null, null)
@@ -33,17 +33,14 @@ class PlayMusicImporter @Inject constructor(context: Context) {
                 artistCursor.close()
             })
 
-            artistCursor.use {
-                while (it.moveToNext()) {
-                    val artistName = it.getString(it.getColumnIndex(MediaStore.Audio.Artists.ARTIST))
-                    val artist = Artist(name = artistName, albums = listOf())
-                    emitter.onNext(artist)
-                }
+           while (artistCursor.moveToNext()) {
+               val artistName = artistCursor.getString(artistCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST))
+               val artist = Artist(name = artistName, albums = listOf())
+               emitter.onNext(artist)
+           }
 
-                emitter.onComplete()
-            }
-        }, BackpressureStrategy.LATEST)
-        return observable.distinctUntilChanged()
+           emitter.onComplete()
+        }, BackpressureStrategy.LATEST).distinctUntilChanged()
     }
 
     private fun getAlbums(artist: Artist) : List<Album> {
