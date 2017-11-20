@@ -3,15 +3,28 @@ package mformetal.metallic.onboarding
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
+import butterknife.BindView
+import butterknife.ButterKnife
 import mformetal.metallic.R
 import mformetal.metallic.domain.Artist
+import mformetal.metallic.util.SelectionHandler
 import mformetal.metallic.util.inflater
 
 /**
  * Created by mbpeele on 11/19/17.
  */
-class ArtistsAdapter(private val artists: MutableList<Artist>) : RecyclerView.Adapter<ArtistsAdapter.ArtistsViewHolder>() {
+internal class ArtistsAdapter(private val artists: List<Artist>)
+    : RecyclerView.Adapter<ArtistsAdapter.ArtistsViewHolder>() {
+
+    private val selectionHandler: SelectionHandler<Artist> = SelectionHandler()
+
+    init {
+        artists.forEachIndexed { index, artist ->
+            selectionHandler.select(index, artist)
+        }
+    }
 
     override fun getItemCount(): Int = artists.count()
 
@@ -21,20 +34,32 @@ class ArtistsAdapter(private val artists: MutableList<Artist>) : RecyclerView.Ad
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistsViewHolder {
-        val view = parent.inflater.inflate(R.layout.artist_item, parent, false)
+        val view = parent.inflater.inflate(R.layout.checkable_artist_item, parent, false)
         return ArtistsViewHolder(view)
     }
 
-    fun add(artist: Artist) {
-        artists.add(artist)
-        notifyItemInserted(artists.size)
-    }
+    fun getSelectedArtists() : List<Artist> = selectionHandler.selectedItems
 
-    class ArtistsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ArtistsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val artistName : TextView = itemView.findViewById(R.id.artist_name)
+        @BindView(R.id.artist_name) lateinit var artistName : TextView
+        @BindView(R.id.artist_checkbox) lateinit var checkBox : CheckBox
+
+        init {
+            ButterKnife.bind(this, itemView)
+
+            checkBox.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    selectionHandler.select(adapterPosition, artists[adapterPosition])
+                } else {
+                    selectionHandler.deselect(adapterPosition)
+                }
+            }
+        }
 
         fun bind(artist: Artist) {
+            checkBox.isChecked = selectionHandler.selected(adapterPosition)
+
             artistName.text = artist.name
         }
     }

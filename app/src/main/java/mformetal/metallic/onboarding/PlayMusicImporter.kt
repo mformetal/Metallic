@@ -40,7 +40,7 @@ class PlayMusicImporter @Inject constructor(context: Context) {
            }
 
            emitter.onComplete()
-        }, BackpressureStrategy.LATEST).distinctUntilChanged()
+        }, BackpressureStrategy.LATEST)
     }
 
     private fun getAlbums(artist: Artist) : List<Album> {

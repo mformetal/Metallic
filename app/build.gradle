@@ -40,6 +40,7 @@ dependencies {
     def supportVersion = "27.0.1"
     implementation "com.android.support:appcompat-v7:$supportVersion"
     implementation "com.android.support:recyclerview-v7:$supportVersion"
+    implementation "com.android.support:design:$supportVersion"
 
     def archComponentsVersion = "1.0.0"
     compile "android.arch.lifecycle:runtime:$archComponentsVersion"

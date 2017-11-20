@@ -24,7 +24,7 @@ class OnboardingActivity : BaseActivity() {
     lateinit var viewModel : OnboardingViewModel
 
     @BindView(R.id.recycler) lateinit var recycler : RecyclerView
-    lateinit var adapter : ArtistsAdapter
+    private lateinit var adapter : ArtistsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +33,6 @@ class OnboardingActivity : BaseActivity() {
         ButterKnife.bind(this)
 
         recycler.layoutManager = LinearLayoutManager(this)
-        adapter = ArtistsAdapter(mutableListOf())
-        recycler.adapter = adapter
 
         app.component
                 .onboarding(OnboardingActivityModule())
@@ -43,8 +41,9 @@ class OnboardingActivity : BaseActivity() {
         viewModel = ViewModelProviders.of(this, factory)[OnboardingViewModel::class.java]
 
         viewModel.observeArtists()
-                .observe(this, Observer<Artist> {
-                    adapter.add(it!!)
+                .observe(this, Observer<List<Artist>> {
+                    adapter = ArtistsAdapter(it!!)
+                    recycler.adapter = adapter
                 })
     }
 }

@@ -5,6 +5,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiConsumer
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import mformetal.metallic.domain.Artist
 import javax.inject.Inject
@@ -15,23 +17,27 @@ import javax.inject.Inject
 class OnboardingViewModel @Inject constructor(private val importer: PlayMusicImporter) : ViewModel() {
 
     private var importDisposable : Disposable ?= null
-    private val artists = MutableLiveData<Artist>()
+    private val liveData = MutableLiveData<List<Artist>>()
 
     override fun onCleared() {
         super.onCleared()
         importDisposable?.dispose()
     }
 
-    fun observeArtists() : LiveData<Artist> {
+    fun observeArtists() : LiveData<List<Artist>> {
         if (importDisposable == null) {
             importDisposable = importer.import()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        artists.value = it
-                    }
+                    .collectInto(mutableListOf(), BiConsumer<MutableList<Artist>, Artist> {
+                        t1, t2 -> t1.add(t2)
+                    })
+                    .subscribe(Consumer<List<Artist>> {
+                        val list = it.asSequence().sortedBy { it.name }.distinctBy { it.name }.toList()
+                        liveData.value = list
+                    })
         }
 
-        return artists
+        return liveData
     }
 }
