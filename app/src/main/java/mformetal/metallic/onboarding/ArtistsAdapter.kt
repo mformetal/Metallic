@@ -1,6 +1,7 @@
 package mformetal.metallic.onboarding
 
 import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
@@ -18,7 +19,11 @@ import mformetal.metallic.util.inflater
 internal class ArtistsAdapter(private val artists: List<Artist>)
     : RecyclerView.Adapter<ArtistsAdapter.ArtistsViewHolder>() {
 
-    private val selectionHandler: SelectionHandler<Artist> = SelectionHandler()
+    private val selectionHandler: SelectionHandler<Artist> = SelectionHandler(artists.size)
+    private var inflater : LayoutInflater ?= null
+
+    val selectedArtists : List<Artist>
+        get() = selectionHandler.selectedItems
 
     init {
         artists.forEachIndexed { index, artist ->
@@ -34,11 +39,12 @@ internal class ArtistsAdapter(private val artists: List<Artist>)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistsViewHolder {
-        val view = parent.inflater.inflate(R.layout.checkable_artist_item, parent, false)
+        if (inflater == null) {
+            inflater = parent.inflater
+        }
+        val view = inflater!!.inflate(R.layout.checkable_artist_item, parent, false)
         return ArtistsViewHolder(view)
     }
-
-    fun getSelectedArtists() : List<Artist> = selectionHandler.selectedItems
 
     inner class ArtistsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

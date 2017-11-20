@@ -19,8 +19,30 @@ class PlayMusicImporter @Inject constructor(context: Context) {
     private val contentResolver = context.applicationContext.contentResolver
     private val URI = Uri.parse("content://com.google.android.music.MusicContent/audio")
 
-    fun import() : Flowable<Artist> {
-        return getArtists()
+    fun getBasicArtistInfo() : Flowable<Artist> {
+        return Flowable.create<Artist>({ emitter ->
+            val artistCursor = contentResolver.query(URI,
+                    arrayOf(MediaStore.Audio.Artists.ARTIST),
+                    null, null, null)
+
+            emitter.setDisposable(Disposables.fromRunnable {
+                artistCursor.close()
+            })
+
+            while (artistCursor.moveToNext() && !artistCursor.isClosed) {
+                val artistName = artistCursor.getString(artistCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST))
+                val artist = Artist(name = artistName, albums = listOf())
+                emitter.onNext(artist)
+            }
+
+            artistCursor.close()
+
+            emitter.onComplete()
+        }, BackpressureStrategy.LATEST)
+    }
+
+    fun getFullArtistInfo() : Flowable<Artist> {
+        TODO("Get artist names with albums and songs")
     }
 
     private fun getArtists() : Flowable<Artist> {
@@ -33,11 +55,13 @@ class PlayMusicImporter @Inject constructor(context: Context) {
                 artistCursor.close()
             })
 
-           while (artistCursor.moveToNext()) {
+           while (artistCursor.moveToNext() && !artistCursor.isClosed) {
                val artistName = artistCursor.getString(artistCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST))
                val artist = Artist(name = artistName, albums = listOf())
                emitter.onNext(artist)
            }
+
+           artistCursor.close()
 
            emitter.onComplete()
         }, BackpressureStrategy.LATEST)

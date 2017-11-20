@@ -3,7 +3,6 @@ package mformetal.metallic.onboarding
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiConsumer
 import io.reactivex.functions.Consumer
@@ -26,15 +25,14 @@ class OnboardingViewModel @Inject constructor(private val importer: PlayMusicImp
 
     fun observeArtists() : LiveData<List<Artist>> {
         if (importDisposable == null) {
-            importDisposable = importer.import()
+            importDisposable = importer.getBasicArtistInfo()
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
                     .collectInto(mutableListOf(), BiConsumer<MutableList<Artist>, Artist> {
                         t1, t2 -> t1.add(t2)
                     })
                     .subscribe(Consumer<List<Artist>> {
-                        val list = it.asSequence().sortedBy { it.name }.distinctBy { it.name }.toList()
-                        liveData.value = list
+                        val list = it.asSequence().sortedBy { it.name.toUpperCase() }.distinctBy { it.name }.toList()
+                        liveData.postValue(list)
                     })
         }
 

@@ -1,13 +1,16 @@
 package mformetal.metallic.util
 
-import android.util.SparseArray
+import android.support.annotation.VisibleForTesting
+import android.support.v4.util.SparseArrayCompat
 
 /**
  * Created by mbpeele on 11/19/17.
  */
-class SelectionHandler<T> {
+class SelectionHandler<T>(capacityHint: Int = 25) {
 
-    private val items = SparseArray<T>()
+    @VisibleForTesting
+    val items = SparseArrayCompat<T>(capacityHint)
+
     val selectedItems : List<T>
         get() {
             val list = mutableListOf<T>()
