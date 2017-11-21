@@ -1,5 +1,6 @@
 package mformetal.metallic.util
 
+import android.arch.lifecycle.Observer
 import android.view.LayoutInflater
 import android.view.View
 
@@ -8,3 +9,13 @@ import android.view.View
  */
 val View.inflater : LayoutInflater
     get() = LayoutInflater.from(context)
+
+fun <T> nonNullObserver(function: (T) -> Unit) : Observer<T> {
+    return Observer { t ->
+        if (t == null) {
+            return@Observer
+        }
+
+        function.invoke(t)
+    }
+}

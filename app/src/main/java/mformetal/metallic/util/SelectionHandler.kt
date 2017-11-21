@@ -1,6 +1,5 @@
 package mformetal.metallic.util
 
-import android.support.annotation.VisibleForTesting
 import android.support.v4.util.SparseArrayCompat
 
 /**
@@ -8,8 +7,7 @@ import android.support.v4.util.SparseArrayCompat
  */
 class SelectionHandler<T>(capacityHint: Int = 25) {
 
-    @VisibleForTesting
-    val items = SparseArrayCompat<T>(capacityHint)
+    private val items = SparseArrayCompat<T>(capacityHint)
 
     val selectedItems : List<T>
         get() {

@@ -2,6 +2,7 @@
 
 import assertk.assert
 import assertk.assertions.contains
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import mformetal.metallic.util.SelectionHandler
 import org.junit.Test
@@ -15,7 +16,8 @@ class SelectionHandlerTests {
     fun testSimpleSelection() {
         val handler = SelectionHandler<String>()
         handler.select(0, "item")
-        assert(handler.items[0]).isEqualTo("item")
+        assert(handler.selected(0)).isEqualTo(true)
+        assert(handler.selectedItems).contains("item")
     }
 
     @Test
@@ -23,8 +25,8 @@ class SelectionHandlerTests {
         val handler = SelectionHandler<String>()
         handler.select(0, "item")
         handler.deselect(0)
-
-        assert(handler.items.size()).isEqualTo(0)
+        assert(handler.selected(0)).isEqualTo(true)
+        assert(handler.selectedItems).isEmpty()
     }
 
     @Test

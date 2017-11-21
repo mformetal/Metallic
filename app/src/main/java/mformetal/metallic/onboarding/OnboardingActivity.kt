@@ -1,6 +1,5 @@
 package mformetal.metallic.onboarding
 
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -11,7 +10,7 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import mformetal.metallic.R
 import mformetal.metallic.core.BaseActivity
-import mformetal.metallic.domain.Artist
+import mformetal.metallic.util.nonNullObserver
 import javax.inject.Inject
 
 /**
@@ -43,7 +42,7 @@ class OnboardingActivity : BaseActivity() {
         viewModel = ViewModelProviders.of(this, factory)[OnboardingViewModel::class.java]
 
         viewModel.observeArtists()
-                .observe(this, Observer<List<Artist>> {
+                .observe(this, nonNullObserver {
                     adapter = ArtistsAdapter(it!!)
                     recycler.adapter = adapter
                 })
@@ -51,6 +50,6 @@ class OnboardingActivity : BaseActivity() {
 
     @OnClick(R.id.done)
     fun onDoneButtonClicked() {
-        val artists = adapter.selectedArtists
+        viewModel.onArtistsSelected(adapter.selectedArtists)
     }
 }

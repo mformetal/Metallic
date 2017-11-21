@@ -16,7 +16,7 @@ import javax.inject.Inject
 class OnboardingViewModel @Inject constructor(private val importer: PlayMusicImporter) : ViewModel() {
 
     private var importDisposable : Disposable ?= null
-    private val liveData = MutableLiveData<List<Artist>>()
+    private val artistsLiveData = MutableLiveData<List<Artist>>()
 
     override fun onCleared() {
         super.onCleared()
@@ -30,12 +30,21 @@ class OnboardingViewModel @Inject constructor(private val importer: PlayMusicImp
                     .collectInto(mutableListOf(), BiConsumer<MutableList<Artist>, Artist> {
                         t1, t2 -> t1.add(t2)
                     })
+                    .map {
+                        it.asSequence()
+                                .sortedBy { it.name.toUpperCase() }
+                                .distinctBy { it.name }
+                                .toList()
+                    }
                     .subscribe(Consumer<List<Artist>> {
-                        val list = it.asSequence().sortedBy { it.name.toUpperCase() }.distinctBy { it.name }.toList()
-                        liveData.postValue(list)
+                        artistsLiveData.postValue(it)
                     })
         }
 
-        return liveData
+        return artistsLiveData
+    }
+
+    fun onArtistsSelected(selectedArtists: List<Artist>) {
+
     }
 }
