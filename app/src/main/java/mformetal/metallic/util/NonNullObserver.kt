@@ -12,4 +12,4 @@ private class NonNullObserver<T>(val block: (T) -> (Unit)) : Observer<T> {
     }
 }
 
-fun <T> observer(block: (T) -> Unit) : Observer<T> = NonNullObserver(block)
+fun <T> safeObserver(block: (T) -> Unit) : Observer<T> = NonNullObserver(block)

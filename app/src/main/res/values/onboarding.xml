@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Errors -->
+    <string name="error_import_not_finished">Import not yet finished.</string>
+
     <string name="importing_progress_text">Importing from local GooglePlay storage…</string>
 </resources>

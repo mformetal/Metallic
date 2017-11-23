@@ -3,6 +3,7 @@ package mformetal.metallic.onboarding
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.ProgressBar
@@ -13,11 +14,12 @@ import butterknife.OnClick
 import mformetal.metallic.R
 import mformetal.metallic.core.BaseActivity
 import mformetal.metallic.util.gone
-import mformetal.metallic.util.observer
+import mformetal.metallic.util.safeObserver
+import mformetal.metallic.util.visible
 import javax.inject.Inject
 
 /**
- * Created by mbpeele on 11/17/17.
+ * @author - mbpeele on 11/17/17.
  */
 class OnboardingActivity : BaseActivity() {
 
@@ -49,14 +51,29 @@ class OnboardingActivity : BaseActivity() {
         viewModel.import()
 
         viewModel.observeImportFinishedEvent()
-                .observe(this, observer {
-                    findViewById<ProgressBar>(R.id.progress_bar).gone()
-                    findViewById<TextView>(R.id.progress_text).gone()
+                .observe(this, safeObserver {
+                    val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
+                    val progressText = findViewById<TextView>(R.id.progress_text)
+
+                    if (it) {
+                        progressBar.gone()
+                        progressText.gone()
+                    } else {
+                        progressBar.visible()
+                        progressText.visible()
+                    }
                 })
     }
 
     @OnClick(R.id.done)
     fun onDoneButtonClicked() {
-        viewModel.onArtistsSelected(adapter.selectedArtists)
+        if (viewModel.isImportFinished) {
+            viewModel.onArtistsSelected()
+        } else {
+            Snackbar.make(findViewById(R.id.coordinator),
+                    getString(R.string.error_import_not_finished),
+                    Snackbar.LENGTH_SHORT)
+                    .show()
+        }
     }
 }

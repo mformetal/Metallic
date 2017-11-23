@@ -19,6 +19,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".home.HomeActivity" >
+        </activity>
+
     </application>
 
 </manifest>

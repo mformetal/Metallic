@@ -13,7 +13,7 @@ import mformetal.metallic.data.Song
 import javax.inject.Inject
 
 /**
- * Created by mbpeele on 11/17/17.
+ * @author - mbpeele on 11/17/17.
  */
 class PlayMusicImporter @Inject constructor(context: Context) {
 

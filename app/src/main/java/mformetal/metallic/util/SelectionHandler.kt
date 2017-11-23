@@ -3,7 +3,7 @@ package mformetal.metallic.util
 import android.support.v4.util.SparseArrayCompat
 
 /**
- * Created by mbpeele on 11/19/17.
+ * @author - mbpeele on 11/19/17
  */
 class SelectionHandler<T>(capacityHint: Int = 25) {
 

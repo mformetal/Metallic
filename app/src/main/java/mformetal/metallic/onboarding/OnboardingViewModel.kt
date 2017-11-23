@@ -9,8 +9,8 @@ import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import io.realm.RealmResults
 import io.realm.Sort
+import mformetal.metallic.core.Router
 import mformetal.metallic.data.Artist
-import mformetal.metallic.domain.api.spotify.SpotifyAPI
 import mformetal.metallic.util.SingleLiveEvent
 import javax.inject.Inject
 
@@ -18,11 +18,14 @@ import javax.inject.Inject
  * Created by mbpeele on 11/18/17.
  */
 class OnboardingViewModel @Inject constructor(private val importer: PlayMusicImporter,
-                                              private val spotifyAPI: SpotifyAPI) : ViewModel() {
+                                              private val router: Router) : ViewModel() {
 
     private val realm : Realm = Realm.getDefaultInstance()
     private var importDisposable : Disposable ?= null
     private val importFinishedLiveData : MutableLiveData<Boolean> = SingleLiveEvent()
+
+    val isImportFinished : Boolean
+        get() = importFinishedLiveData.value ?: false
 
     override fun onCleared() {
         super.onCleared()
@@ -51,7 +54,7 @@ class OnboardingViewModel @Inject constructor(private val importer: PlayMusicImp
 
     fun observeImportFinishedEvent() : LiveData<Boolean> = importFinishedLiveData
 
-    fun onArtistsSelected(collection: Collection<Artist>) {
-
+    fun onArtistsSelected() {
+        router.onboard()
     }
 }
