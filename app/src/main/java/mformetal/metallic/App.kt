@@ -1,6 +1,8 @@
 package mformetal.metallic
 
 import android.app.Application
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import mformetal.metallic.dagger.AppComponent
 import mformetal.metallic.dagger.AppModule
 import mformetal.metallic.dagger.DaggerAppComponent
@@ -14,6 +16,13 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        Realm.init(this)
+        Realm.setDefaultConfiguration(
+                RealmConfiguration.Builder()
+                        .deleteRealmIfMigrationNeeded()
+                        .build()
+        )
 
         component = DaggerAppComponent
                 .builder()

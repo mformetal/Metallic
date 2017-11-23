@@ -8,16 +8,18 @@ import android.widget.CheckBox
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
+import io.realm.RealmRecyclerViewAdapter
+import io.realm.RealmResults
 import mformetal.metallic.R
-import mformetal.metallic.domain.Artist
+import mformetal.metallic.data.Artist
 import mformetal.metallic.util.SelectionHandler
 import mformetal.metallic.util.inflater
 
 /**
  * Created by mbpeele on 11/19/17.
  */
-internal class ArtistsAdapter(private val artists: List<Artist>)
-    : RecyclerView.Adapter<ArtistsAdapter.ArtistsViewHolder>() {
+internal class ArtistsAdapter(artists: RealmResults<Artist>)
+    : RealmRecyclerViewAdapter<Artist, ArtistsAdapter.ArtistsViewHolder>(artists, true) {
 
     private val selectionHandler: SelectionHandler<Artist> = SelectionHandler(artists.size)
     private var inflater : LayoutInflater ?= null
@@ -31,10 +33,8 @@ internal class ArtistsAdapter(private val artists: List<Artist>)
         }
     }
 
-    override fun getItemCount(): Int = artists.count()
-
     override fun onBindViewHolder(holder: ArtistsViewHolder, position: Int) {
-        val artist = artists[position]
+        val artist = getItem(position)!!
         holder.bind(artist)
     }
 
@@ -55,8 +55,9 @@ internal class ArtistsAdapter(private val artists: List<Artist>)
             ButterKnife.bind(this, itemView)
 
             checkBox.setOnCheckedChangeListener { _, isChecked ->
+                val artist = getItem(adapterPosition)!!
                 if (isChecked) {
-                    selectionHandler.select(adapterPosition, artists[adapterPosition])
+                    selectionHandler.select(adapterPosition, artist)
                 } else {
                     selectionHandler.deselect(adapterPosition)
                 }

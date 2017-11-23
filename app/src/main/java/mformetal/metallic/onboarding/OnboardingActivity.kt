@@ -10,7 +10,6 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import mformetal.metallic.R
 import mformetal.metallic.core.BaseActivity
-import mformetal.metallic.util.nonNullObserver
 import javax.inject.Inject
 
 /**
@@ -32,20 +31,18 @@ class OnboardingActivity : BaseActivity() {
         setContentView(R.layout.onboarding)
         ButterKnife.bind(this)
 
-        recycler.layoutManager = LinearLayoutManager(this)
-        recycler.setHasFixedSize(true)
-
         app.component
                 .onboarding(OnboardingActivityModule())
                 .injectMembers(this)
 
         viewModel = ViewModelProviders.of(this, factory)[OnboardingViewModel::class.java]
 
-        viewModel.observeArtists()
-                .observe(this, nonNullObserver {
-                    adapter = ArtistsAdapter(it!!)
-                    recycler.adapter = adapter
-                })
+        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.setHasFixedSize(true)
+        adapter = ArtistsAdapter(viewModel.observeArtists())
+        recycler.adapter = adapter
+
+        viewModel.import()
     }
 
     @OnClick(R.id.done)
