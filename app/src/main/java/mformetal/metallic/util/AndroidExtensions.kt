@@ -10,6 +10,14 @@ import android.view.View
 val View.inflater : LayoutInflater
     get() = LayoutInflater.from(context)
 
+fun View.visible() {
+    visibility = View.VISIBLE
+}
+
+fun View.gone() {
+    visibility = View.GONE
+}
+
 fun <T> nonNullObserver(function: (T) -> Unit) : Observer<T> {
     return Observer { t ->
         if (t == null) {

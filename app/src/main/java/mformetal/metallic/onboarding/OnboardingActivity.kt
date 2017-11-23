@@ -5,11 +5,15 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.widget.ProgressBar
+import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import mformetal.metallic.R
 import mformetal.metallic.core.BaseActivity
+import mformetal.metallic.util.gone
+import mformetal.metallic.util.observer
 import javax.inject.Inject
 
 /**
@@ -43,6 +47,12 @@ class OnboardingActivity : BaseActivity() {
         recycler.adapter = adapter
 
         viewModel.import()
+
+        viewModel.observeImportFinishedEvent()
+                .observe(this, observer {
+                    findViewById<ProgressBar>(R.id.progress_bar).gone()
+                    findViewById<TextView>(R.id.progress_text).gone()
+                })
     }
 
     @OnClick(R.id.done)

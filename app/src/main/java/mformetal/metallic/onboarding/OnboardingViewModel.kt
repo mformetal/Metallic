@@ -1,5 +1,7 @@
 package mformetal.metallic.onboarding
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -9,6 +11,7 @@ import io.realm.RealmResults
 import io.realm.Sort
 import mformetal.metallic.data.Artist
 import mformetal.metallic.domain.api.spotify.SpotifyAPI
+import mformetal.metallic.util.SingleLiveEvent
 import javax.inject.Inject
 
 /**
@@ -19,6 +22,7 @@ class OnboardingViewModel @Inject constructor(private val importer: PlayMusicImp
 
     private val realm : Realm = Realm.getDefaultInstance()
     private var importDisposable : Disposable ?= null
+    private val importFinishedLiveData : MutableLiveData<Boolean> = SingleLiveEvent()
 
     override fun onCleared() {
         super.onCleared()
@@ -38,9 +42,14 @@ class OnboardingViewModel @Inject constructor(private val importer: PlayMusicImp
                         realm.executeTransactionAsync {
                             it.insertOrUpdate(artist)
                         }
+                    }, { }
+                    , {
+                        importFinishedLiveData.value = true
                     })
         }
     }
+
+    fun observeImportFinishedEvent() : LiveData<Boolean> = importFinishedLiveData
 
     fun onArtistsSelected(collection: Collection<Artist>) {
 
