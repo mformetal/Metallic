@@ -39,7 +39,7 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
                         Completable.create { emitter ->
                             val realm = Realm.getDefaultInstance()
                             realm.executeTransactionAsync({
-                                it.insertOrUpdate(artists)
+                                it.insert(artists)
                             }, {
                                 emitter.onComplete()
                             }, {

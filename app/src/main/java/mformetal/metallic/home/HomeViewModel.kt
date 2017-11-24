@@ -11,7 +11,7 @@ import javax.inject.Inject
 /**
  * @author - mbpeele on 11/23/17.
  */
-class HomeViewModel @Inject constructor(): ViewModel() {
+class HomeViewModel @Inject constructor(): ViewModel(), ArtistsAdapterClickDelegate {
 
     private val realm : Realm = Realm.getDefaultInstance()
 
@@ -26,5 +26,13 @@ class HomeViewModel @Inject constructor(): ViewModel() {
         return realm.where(Artist::class.java)
                 .contains("name", query, Case.INSENSITIVE)
                 .findAllSortedAsync("name", Sort.ASCENDING)
+    }
+
+    override fun onArtistClickedForWatchList(artist: Artist) {
+        if (!artist.isWatching) {
+            realm.executeTransaction {
+                artist.isWatching = true
+            }
+        }
     }
 }

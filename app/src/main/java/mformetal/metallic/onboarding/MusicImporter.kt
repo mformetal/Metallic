@@ -37,7 +37,7 @@ class MusicImporter @Inject constructor(context: Context) {
            while (!cursor.isClosed && cursor.moveToNext()) {
                val artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST))
                if (alreadySeenNames.doesNotContain(artistName.toLowerCase())) {
-                   alreadySeenNames.add(artistName)
+                   alreadySeenNames.add(artistName.toLowerCase())
 
                    val albums = getAlbums(artistName)
                    val artist = Artist(name = artistName,

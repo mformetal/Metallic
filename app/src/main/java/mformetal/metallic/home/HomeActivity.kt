@@ -54,7 +54,7 @@ class HomeActivity : BaseActivity() {
 
         viewModel = ViewModelProviders.of(this, factory)[HomeViewModel::class.java]
 
-        adapter = ArtistsAdapter(viewModel.artists)
+        adapter = ArtistsAdapter(viewModel, viewModel.artists)
 
         val offset = resources.getDimensionPixelOffset(R.dimen.spacing_normal)
         recycler.addItemDecoration(object : RecyclerView.ItemDecoration() {

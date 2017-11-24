@@ -3,4 +3,6 @@
 
     <string name="search_artist_prompt">Search Artists</string>
 
+    <string name="home_artist_item_menu_add_watchlist">Add to WatchList</string>
+
 </resources>
