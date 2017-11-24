@@ -18,8 +18,8 @@ import mformetal.metallic.util.inflater
 /**
  * Created by mbpeele on 11/19/17.
  */
-internal class ArtistsAdapter(artists: RealmResults<Artist>)
-    : RealmRecyclerViewAdapter<Artist, ArtistsAdapter.ArtistsViewHolder>(artists, true) {
+internal class ArtistNameAdapter(artists: RealmResults<Artist>)
+    : RealmRecyclerViewAdapter<Artist, ArtistNameAdapter.ArtistNameViewHolder>(artists, true) {
 
     private val selectionHandler: SelectionHandler<Artist> = SelectionHandler(artists.size)
     private var inflater : LayoutInflater ?= null
@@ -33,20 +33,20 @@ internal class ArtistsAdapter(artists: RealmResults<Artist>)
         }
     }
 
-    override fun onBindViewHolder(holder: ArtistsViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ArtistNameViewHolder, position: Int) {
         val artist = getItem(position)!!
         holder.bind(artist)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistsViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistNameViewHolder {
         if (inflater == null) {
             inflater = parent.inflater
         }
         val view = inflater!!.inflate(R.layout.checkable_artist_item, parent, false)
-        return ArtistsViewHolder(view)
+        return ArtistNameViewHolder(view)
     }
 
-    inner class ArtistsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ArtistNameViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         @BindView(R.id.artist_name) lateinit var artistName : TextView
         @BindView(R.id.artist_checkbox) lateinit var checkBox : CheckBox

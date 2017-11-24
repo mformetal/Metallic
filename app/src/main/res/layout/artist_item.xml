@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/spacing_normal"
+    app:cardBackgroundColor="@android:color/white" >
+
+    <ImageView
+        android:id="@+id/artist_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/artist_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        android:layout_marginStart="@dimen/spacing_micro"
+        android:layout_marginEnd="@dimen/spacing_micro"
+        tools:text="Acrania" />
+
+</android.support.v7.widget.CardView>

@@ -6,7 +6,11 @@ import dagger.Module
 import dagger.Provides
 import mformetal.metallic.App
 import mformetal.metallic.BuildConfig
+import mformetal.metallic.R
+import mformetal.metallic.core.PreferencesRepository
+import mformetal.metallic.core.SharedPreferencesRepository
 import mformetal.metallic.domain.api.spotify.SpotifyAPI
+import mformetal.metallic.domain.api.spotify.SpotifyAuthInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -22,6 +26,13 @@ class AppModule(private val app: App) {
 
     @Provides
     fun context() : Context = app
+
+    @Provides
+    @Singleton
+    fun preferencesRepository(context: Context) : PreferencesRepository {
+        val preferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+        return SharedPreferencesRepository(preferences)
+    }
 
     @Provides
     @Singleton
@@ -51,10 +62,17 @@ class AppModule(private val app: App) {
     @Provides
     @Singleton
     fun spotifyApi(retrofitBuilder: Retrofit.Builder,
-                   okHttpClientBuilder: OkHttpClient.Builder) : SpotifyAPI {
+                   okHttpClientBuilder: OkHttpClient.Builder,
+                   context: Context) : SpotifyAPI {
+        val client = okHttpClientBuilder
+                .addInterceptor(SpotifyAuthInterceptor(
+                        context.getString(R.string.spotify_client_id),
+                        context.getString(R.string.spotify_client_secret)))
+                .build()
+
         return retrofitBuilder
-                .client(okHttpClientBuilder.build())
-                .baseUrl("https://tastedive.com/api/")
+                .client(client)
+                .baseUrl("https://api.spotify.com/v1/")
                 .build()
                 .create(SpotifyAPI::class.java)
     }

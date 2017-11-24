@@ -4,17 +4,18 @@ import android.arch.lifecycle.ViewModel
 import io.realm.Case
 import io.realm.Realm
 import io.realm.RealmResults
+import io.realm.Sort
 import mformetal.metallic.data.Artist
+import javax.inject.Inject
 
 /**
  * @author - mbpeele on 11/23/17.
  */
-class HomeViewModel : ViewModel() {
+class HomeViewModel @Inject constructor(): ViewModel() {
 
     private val realm : Realm = Realm.getDefaultInstance()
 
-    val artists : RealmResults<Artist>
-        get() = realm.where(Artist::class.java).findAllAsync()
+    val artists : RealmResults<Artist> = realm.where(Artist::class.java).findAllSortedAsync("name", Sort.ASCENDING)
 
     override fun onCleared() {
         super.onCleared()
@@ -24,6 +25,6 @@ class HomeViewModel : ViewModel() {
     fun searchArtistsByName(query: String) : RealmResults<Artist> {
         return realm.where(Artist::class.java)
                 .contains("name", query, Case.INSENSITIVE)
-                .findAllAsync()
+                .findAllSortedAsync("name", Sort.ASCENDING)
     }
 }

@@ -1,10 +1,7 @@
 package mformetal.metallic.domain.api.spotify
 
 import io.reactivex.Single
-import retrofit2.Response
 import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
 import retrofit2.http.Query
 
 /**
@@ -12,14 +9,11 @@ import retrofit2.http.Query
  */
 interface SpotifyAPI {
 
-    @POST
-    fun authorize(@Header("Authorization") auth: String) : Single<Response<SpotifyAuthResult>>
-
     @GET("recommendations")
     fun searchForSimilarArtists(@Query("seedArtists") artistSpotifyIds: List<String>)
 
     @GET("search?type=artist")
-    fun searchArtist(@Query("q") artistName: String) : Single<Response<SpotifyArtistsSearchResult>>
+    fun searchArtist(@Query("q") artistName: String) : Single<SpotifyArtistsSearchResult>
 }
 
 data class SpotifyAuthResult(

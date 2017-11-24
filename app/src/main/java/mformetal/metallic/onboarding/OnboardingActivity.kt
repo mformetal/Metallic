@@ -29,13 +29,10 @@ class OnboardingActivity : BaseActivity() {
     lateinit var viewModel : OnboardingViewModel
 
     @BindView(R.id.recycler) lateinit var recycler : RecyclerView
-    private lateinit var adapter : ArtistsAdapter
+    private lateinit var adapter : ArtistNameAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.onboarding)
-        ButterKnife.bind(this)
 
         app.component
                 .onboarding(OnboardingActivityModule())
@@ -43,32 +40,39 @@ class OnboardingActivity : BaseActivity() {
 
         viewModel = ViewModelProviders.of(this, factory)[OnboardingViewModel::class.java]
 
-        recycler.layoutManager = LinearLayoutManager(this)
-        recycler.setHasFixedSize(true)
-        adapter = ArtistsAdapter(viewModel.observeArtists())
-        recycler.adapter = adapter
+        if (viewModel.hasUserOnboarded) {
+            viewModel.onboard()
+        } else {
+            setContentView(R.layout.onboarding)
+            ButterKnife.bind(this)
 
-        viewModel.import()
+            recycler.layoutManager = LinearLayoutManager(this)
+            recycler.setHasFixedSize(true)
+            adapter = ArtistNameAdapter(viewModel.observeArtists())
+            recycler.adapter = adapter
 
-        viewModel.observeImportFinishedEvent()
-                .observe(this, safeObserver {
-                    val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
-                    val progressText = findViewById<TextView>(R.id.progress_text)
+            viewModel.import()
 
-                    if (it) {
-                        progressBar.gone()
-                        progressText.gone()
-                    } else {
-                        progressBar.visible()
-                        progressText.visible()
-                    }
-                })
+            viewModel.observeImportFinishedEvent()
+                    .observe(this, safeObserver {
+                        val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
+                        val progressText = findViewById<TextView>(R.id.progress_text)
+
+                        if (it) {
+                            progressBar.gone()
+                            progressText.gone()
+                        } else {
+                            progressBar.visible()
+                            progressText.visible()
+                        }
+                    })
+        }
     }
 
     @OnClick(R.id.done)
     fun onDoneButtonClicked() {
         if (viewModel.isImportFinished) {
-            viewModel.onArtistsSelected()
+            viewModel.onboard()
         } else {
             Snackbar.make(findViewById(R.id.coordinator),
                     getString(R.string.error_import_not_finished),
