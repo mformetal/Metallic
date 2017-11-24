@@ -11,6 +11,6 @@
         android:id="@+id/animator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/music_note" />
+        android:src="@drawable/music_note_24dp" />
 
 </LinearLayout>

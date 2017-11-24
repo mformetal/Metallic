@@ -8,10 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 import mformetal.metallic.R
+import mformetal.metallic.core.GlideApp
 import mformetal.metallic.data.Artist
 import mformetal.metallic.util.inflater
 
@@ -23,17 +24,17 @@ class ArtistsAdapter(artists: RealmResults<Artist>)
 
     private var inflater : LayoutInflater?= null
 
-    override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
-        val artist = getItem(position)!!
-        holder.bind(artist)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistViewHolder {
         if (inflater == null) {
             inflater = parent.inflater
         }
         val view = inflater!!.inflate(R.layout.home_artist_item, parent, false)
         return ArtistViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
+        val artist = getItem(position)!!
+        holder.bind(artist)
     }
 
     inner class ArtistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -48,8 +49,10 @@ class ArtistsAdapter(artists: RealmResults<Artist>)
         fun bind(artist: Artist) {
             val url = artist.artworkUrl ?: artist.albums?.firstOrNull { it.artworkUrl != null }?.artworkUrl
             url?.let {
-                Glide.with(itemView.context)
+                GlideApp.with(itemView.context)
                         .load(it)
+                        .fitCenter()
+                        .transition(withCrossFade())
                         .into(artistImage)
             }
 

@@ -1,10 +1,9 @@
 package mformetal.metallic.onboarding
 
 import android.arch.lifecycle.ViewModel
-import io.reactivex.Single
+import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import mformetal.metallic.core.PreferencesRepository
@@ -36,21 +35,21 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
                         t1.add(t2)
                     })
                     .observeOn(AndroidSchedulers.mainThread())
-                    .flatMap { artists ->
-                        Single.create<Unit> { emitter ->
-                            val threadRealm = Realm.getDefaultInstance()
-                            threadRealm.executeTransactionAsync({
+                    .flatMapCompletable { artists ->
+                        Completable.create { emitter ->
+                            val realm = Realm.getDefaultInstance()
+                            realm.executeTransactionAsync({
                                 it.insertOrUpdate(artists)
                             }, {
-                                emitter.onSuccess(Unit)
+                                emitter.onComplete()
                             }, {
                                 emitter.onError(it)
                             })
                         }
                     }
-                    .subscribe(Consumer {
+                    .subscribe {
                         onboard()
-                    })
+                    }
         }
     }
 
