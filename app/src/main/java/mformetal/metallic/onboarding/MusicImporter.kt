@@ -10,12 +10,13 @@ import io.realm.RealmList
 import mformetal.metallic.data.Album
 import mformetal.metallic.data.Artist
 import mformetal.metallic.data.Song
+import mformetal.metallic.util.doesNotContain
 import javax.inject.Inject
 
 /**
  * @author - mbpeele on 11/17/17.
  */
-class PlayMusicImporter @Inject constructor(context: Context) {
+class MusicImporter @Inject constructor(context: Context) {
 
     private val contentResolver = context.applicationContext.contentResolver
     private val URI = Uri.parse("content://com.google.android.music.MusicContent/audio")
@@ -24,26 +25,29 @@ class PlayMusicImporter @Inject constructor(context: Context) {
        return Flowable.create<Artist>({
            val alreadySeenNames = mutableSetOf<String>()
 
-           val artistCursor = contentResolver.query(URI,
-                    arrayOf(MediaStore.Audio.Artists.ARTIST),
+           val cursor = contentResolver.query(URI,
+                    arrayOf(MediaStore.Audio.Artists.ARTIST,
+                            "ArtistArtLocation"),
                     null, null, null)
 
            it.setDisposable(Disposables.fromRunnable {
-               artistCursor.close()
+               cursor.close()
            })
 
-           while (!artistCursor.isClosed && artistCursor.moveToNext()) {
-               val artistName = artistCursor.getString(artistCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST))
-               if (!alreadySeenNames.contains(artistName)) {
+           while (!cursor.isClosed && cursor.moveToNext()) {
+               val artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST))
+               if (alreadySeenNames.doesNotContain(artistName.toLowerCase())) {
                    alreadySeenNames.add(artistName)
 
                    val albums = getAlbums(artistName)
-                   val artist = Artist(name = artistName, albums = albums)
+                   val artist = Artist(name = artistName,
+                           artworkUrl = cursor.getString(cursor.getColumnIndex("ArtistArtLocation")),
+                           albums = albums)
                    it.onNext(artist)
                }
            }
 
-           artistCursor.close()
+           cursor.close()
 
            it.onComplete()
         }, BackpressureStrategy.LATEST)
@@ -53,8 +57,9 @@ class PlayMusicImporter @Inject constructor(context: Context) {
         val albums = RealmList<Album>()
 
         val albumCursor = contentResolver.query(URI,
-                arrayOf(MediaStore.Audio.Artists.Albums.ALBUM),
-                MediaStore.Audio.Media.ARTIST + " = ? ",
+                arrayOf(MediaStore.Audio.Albums.ALBUM,
+                        "AlbumArtLocation"),
+                MediaStore.Audio.Albums.ARTIST + " = ? ",
                 arrayOf(artistName), null)
 
         albumCursor.use {
@@ -62,13 +67,13 @@ class PlayMusicImporter @Inject constructor(context: Context) {
                 val albumName = it.getString(it.getColumnIndex(MediaStore.Audio.Albums.ALBUM))
                 if (albums.none { it.name == albumName }) {
                     val songs = getSongs(artistName, albumName)
-                    val album = Album(name = albumName, songs = songs)
+                    val album = Album(name = albumName,
+                            artworkUrl = it.getString(it.getColumnIndex("AlbumArtLocation")),
+                            songs = songs)
                     albums.add(album)
                 }
             }
         }
-
-        albumCursor.close()
 
         return albums
     }
@@ -90,7 +95,6 @@ class PlayMusicImporter @Inject constructor(context: Context) {
                     songs.add(song)
                 }
             }
-
         }
 
         return songs

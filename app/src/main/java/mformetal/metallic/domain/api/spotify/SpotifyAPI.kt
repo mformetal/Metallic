@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 /**
- * Created by mbpeele on 11/20/17.
+ * @author - mbpeele on 11/20/17.
  */
 interface SpotifyAPI {
 
@@ -14,6 +14,7 @@ interface SpotifyAPI {
 
     @GET("search?type=artist")
     fun searchArtist(@Query("q") artistName: String) : Single<SpotifyArtistsSearchResult>
+
 }
 
 data class SpotifyAuthResult(

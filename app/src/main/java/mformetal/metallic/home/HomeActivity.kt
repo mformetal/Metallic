@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.CoordinatorLayout
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.Menu
@@ -49,7 +49,7 @@ class HomeActivity : BaseActivity() {
         viewModel = ViewModelProviders.of(this, factory)[HomeViewModel::class.java]
 
         adapter = ArtistsAdapter(viewModel.artists)
-        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.layoutManager = GridLayoutManager(this, 2)
         recycler.adapter = adapter
     }
 

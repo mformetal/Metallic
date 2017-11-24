@@ -2,43 +2,15 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:id="@+id/progress_text"
+    <ImageView
+        android:id="@+id/animator"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/importing_progress_text"
-        android:textAppearance="@android:style/TextAppearance.Small"
-        android:gravity="center_horizontal" />
-
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/coordinator"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/done"
-            android:src="@drawable/ic_done_black_24dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
-            app:layout_anchor="@id/recycler"
-            app:layout_anchorGravity="bottom|end" />
-
-    </android.support.design.widget.CoordinatorLayout>
+        android:layout_height="match_parent"
+        android:src="@drawable/music_note" />
 
 </LinearLayout>

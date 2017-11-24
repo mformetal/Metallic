@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.bumptech.glide.Glide
 import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 import mformetal.metallic.R
@@ -31,7 +32,7 @@ class ArtistsAdapter(artists: RealmResults<Artist>)
         if (inflater == null) {
             inflater = parent.inflater
         }
-        val view = inflater!!.inflate(R.layout.artist_item, parent, false)
+        val view = inflater!!.inflate(R.layout.home_artist_item, parent, false)
         return ArtistViewHolder(view)
     }
 
@@ -45,6 +46,13 @@ class ArtistsAdapter(artists: RealmResults<Artist>)
         }
 
         fun bind(artist: Artist) {
+            val url = artist.artworkUrl ?: artist.albums?.firstOrNull { it.artworkUrl != null }?.artworkUrl
+            url?.let {
+                Glide.with(itemView.context)
+                        .load(it)
+                        .into(artistImage)
+            }
+
             artistName.text = artist.name
         }
     }
