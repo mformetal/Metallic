@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
-import android.support.design.widget.CoordinatorLayout
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
@@ -31,13 +30,12 @@ class HomeActivity : BaseActivity() {
 
     lateinit var viewModel : HomeViewModel
 
-    @BindView(R.id.container) lateinit var container : CoordinatorLayout
     @BindView(R.id.recycler) lateinit var recycler : RecyclerView
     @BindView(R.id.toolbar) lateinit var toolbar : Toolbar
     lateinit var adapter : ArtistsAdapter
 
     companion object {
-        fun create(context: Context) = Intent(context, HomeActivity::class.java)
+        fun create(context: Context) : Intent = Intent(context, HomeActivity::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

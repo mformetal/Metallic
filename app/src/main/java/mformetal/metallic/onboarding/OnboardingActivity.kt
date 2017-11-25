@@ -1,5 +1,6 @@
 package mformetal.metallic.onboarding
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.pm.PackageManager
@@ -11,6 +12,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import mformetal.metallic.R
 import mformetal.metallic.core.BaseActivity
+import mformetal.metallic.home.HomeActivity
 import javax.inject.Inject
 
 /**
@@ -37,12 +39,20 @@ class OnboardingActivity : BaseActivity() {
         viewModel = ViewModelProviders.of(this, factory)[OnboardingViewModel::class.java]
 
         if (viewModel.hasUserOnboarded) {
-            viewModel.onboard()
+            startHomeActivity()
             return
         }
 
         setContentView(R.layout.onboarding)
         ButterKnife.bind(this)
+
+        viewModel.observeImportStatusChanges()
+                .observe(this, Observer {
+                    if (it!!) {
+                        val intent = HomeActivity.create(this)
+                        startActivity(intent)
+                    }
+                })
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
                  == PackageManager.PERMISSION_GRANTED) {
@@ -67,5 +77,11 @@ class OnboardingActivity : BaseActivity() {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
+    }
+
+    fun startHomeActivity() {
+        val intent = HomeActivity.create(this)
+        startActivity(intent)
+        finish()
     }
 }

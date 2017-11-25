@@ -14,6 +14,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withC
 import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 import mformetal.metallic.R
+import mformetal.metallic.artistdetail.ArtistDetailActivity
 import mformetal.metallic.core.GlideApp
 import mformetal.metallic.data.Artist
 import mformetal.metallic.util.inflater
@@ -47,6 +48,12 @@ class ArtistsAdapter(private val delegate: ArtistsAdapterClickDelegate, artists:
 
         init {
             ButterKnife.bind(this, itemView)
+
+            artistImage.setOnClickListener {
+                val artist = getItem(adapterPosition)!!
+                val intent = ArtistDetailActivity.create(it.context, artist)
+                it.context.startActivity(intent)
+            }
 
             artistOptions.setOnClickListener {
                 val popup = PopupMenu(it.context, it)

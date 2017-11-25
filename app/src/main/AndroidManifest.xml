@@ -24,6 +24,10 @@
             android:name=".home.HomeActivity" >
         </activity>
 
+        <activity
+            android:name=".artistdetail.ArtistDetailActivity" >
+        </activity>
+
     </application>
 
 </manifest>
