@@ -1,5 +1,7 @@
 package mformetal.metallic.home
 
+import android.app.Activity
+import android.support.v4.view.ViewCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +20,8 @@ import mformetal.metallic.artistdetail.ArtistDetailActivity
 import mformetal.metallic.core.GlideApp
 import mformetal.metallic.data.Artist
 import mformetal.metallic.util.inflater
+
+
 
 /**
  * @author - mbpeele on 11/23/17.
@@ -50,9 +54,10 @@ class ArtistsAdapter(private val delegate: ArtistsAdapterClickDelegate, artists:
             ButterKnife.bind(this, itemView)
 
             artistImage.setOnClickListener {
+                val activity = it.context as Activity
                 val artist = getItem(adapterPosition)!!
-                val intent = ArtistDetailActivity.create(it.context, artist)
-                it.context.startActivity(intent)
+                val pair = ArtistDetailActivity.create(activity, artistImage, artist)
+                activity.startActivity(pair.first, pair.second!!.toBundle())
             }
 
             artistOptions.setOnClickListener {
@@ -81,6 +86,8 @@ class ArtistsAdapter(private val delegate: ArtistsAdapterClickDelegate, artists:
             }
 
             artistName.text = artist.name
+
+            ViewCompat.setTransitionName(artistImage, artist.name!!)
         }
     }
 }

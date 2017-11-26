@@ -10,7 +10,7 @@ import retrofit2.http.Query
 interface SpotifyAPI {
 
     @GET("recommendations")
-    fun searchForSimilarArtists(@Query("seedArtists") artistSpotifyIds: List<String>)
+    fun searchForSimilarArtists(@Query("seedArtists") artistSpotifyIds: List<String>) : Single<SearchSimilarArtistsResult>
 
     @GET("search?type=artist")
     fun searchArtist(@Query("q") artistName: String) : Single<SpotifyArtistsSearchResult>
@@ -57,4 +57,18 @@ data class SpotifyImage(
 		val height: Int,
 		val url: String,
 		val width: Int
+)
+
+
+data class SearchSimilarArtistsResult(
+		val tracks: List<Track>
+)
+
+data class Track(
+		val artists: List<Artist>
+)
+
+data class Artist(
+		val id: String,
+		val name: String
 )

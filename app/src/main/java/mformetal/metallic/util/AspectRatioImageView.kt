@@ -8,7 +8,7 @@ import mformetal.metallic.R
 /**
  * @author - mbpeele on 11/24/17.
  */
-class AspectRatioImageView : AppCompatImageView {
+open class AspectRatioImageView : AppCompatImageView {
 
     private var aspectRatio: Float = DEFAULT_ASPECT_RATIO
         set(value) {

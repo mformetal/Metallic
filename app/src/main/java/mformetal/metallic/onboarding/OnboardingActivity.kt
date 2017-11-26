@@ -79,7 +79,7 @@ class OnboardingActivity : BaseActivity() {
         }
     }
 
-    fun startHomeActivity() {
+    private fun startHomeActivity() {
         val intent = HomeActivity.create(this)
         startActivity(intent)
         finish()
