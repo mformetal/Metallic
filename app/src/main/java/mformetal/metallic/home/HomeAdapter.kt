@@ -21,13 +21,11 @@ import mformetal.metallic.core.GlideApp
 import mformetal.metallic.data.Artist
 import mformetal.metallic.util.inflater
 
-
-
 /**
  * @author - mbpeele on 11/23/17.
  */
-class ArtistsAdapter(private val delegate: ArtistsAdapterClickDelegate, artists: RealmResults<Artist>)
-    : RealmRecyclerViewAdapter<Artist, ArtistsAdapter.ArtistViewHolder>(artists, true) {
+class HomeAdapter(private val delegate: HomeAdapterClickDelegate, artists: RealmResults<Artist>)
+    : RealmRecyclerViewAdapter<Artist, HomeAdapter.ArtistViewHolder>(artists, true) {
 
     private var inflater : LayoutInflater?= null
 

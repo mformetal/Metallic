@@ -11,7 +11,7 @@ import javax.inject.Inject
 /**
  * @author - mbpeele on 11/23/17.
  */
-class HomeViewModel @Inject constructor(): ViewModel(), ArtistsAdapterClickDelegate {
+class HomeViewModel @Inject constructor(): ViewModel(), HomeAdapterClickDelegate {
 
     private val realm : Realm = Realm.getDefaultInstance()
 

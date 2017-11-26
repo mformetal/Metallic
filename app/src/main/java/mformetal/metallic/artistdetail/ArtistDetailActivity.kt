@@ -16,6 +16,8 @@ import android.support.v4.util.Pair
 import android.support.v4.view.ViewCompat
 import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.support.v7.graphics.Palette
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.*
 import android.view.animation.DecelerateInterpolator
@@ -32,6 +34,8 @@ import mformetal.metallic.core.BaseActivity
 import mformetal.metallic.core.GlideApp
 import mformetal.metallic.data.Artist
 import mformetal.metallic.util.ColorsUtils
+import mformetal.metallic.util.GridItemDecoration
+import mformetal.metallic.util.safeObserver
 import javax.inject.Inject
 
 /**
@@ -47,6 +51,7 @@ class ArtistDetailActivity : BaseActivity() {
     @BindView(R.id.artist_image) lateinit var image: ImageView
     @BindView(R.id.artist_name) lateinit var name: TextView
     @BindView(R.id.toolbar) lateinit var toolbar: Toolbar
+    @BindView(R.id.recycler) lateinit var recycler: RecyclerView
 
     companion object {
         private const val KEY_ARTIST_NAME = "artistNameKey"
@@ -99,7 +104,7 @@ class ArtistDetailActivity : BaseActivity() {
                 .artistDetail(ArtistDetailModule())
                 .injectMembers(this)
 
-        viewModel = ViewModelProviders.of(this)[ArtistDetailViewModel::class.java]
+        viewModel = ViewModelProviders.of(this, factory)[ArtistDetailViewModel::class.java]
 
         val artist = viewModel.getArtistByName(intent.getStringExtra(KEY_ARTIST_NAME))
 
@@ -107,7 +112,29 @@ class ArtistDetailActivity : BaseActivity() {
 
         name.text = artist.name
 
+        recycler.addItemDecoration(GridItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
+        recycler.layoutManager = GridLayoutManager(this, 2)
+
         loadImage(artist)
+
+        viewModel.searchForSimilarArtists(artist)
+        viewModel.observeSimilarArtists()
+                .observe(this, safeObserver {
+                    recycler.adapter = SimilarArtistsAdapter(it, object : SimilarArtistsAdapterClickDelegate {
+                        override fun onArtistClicked(artist: Artist) {
+                            viewModel.onSimilarArtistClicked(artist)
+                        }
+                    })
+                })
+
+        viewModel.observeClarifyArtists()
+                .observe(this, safeObserver {
+                    recycler.adapter = SimilarArtistsAdapter(it, object : SimilarArtistsAdapterClickDelegate {
+                        override fun onArtistClicked(artist: Artist) {
+                            viewModel.onClarifyingArtistClicked(artist)
+                        }
+                    })
+                })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

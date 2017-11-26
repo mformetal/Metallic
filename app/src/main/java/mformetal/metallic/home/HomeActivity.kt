@@ -5,18 +5,17 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 import android.view.Menu
-import android.view.View
 import butterknife.BindView
 import butterknife.ButterKnife
 import mformetal.metallic.R
 import mformetal.metallic.core.BaseActivity
+import mformetal.metallic.util.GridItemDecoration
 import javax.inject.Inject
 
 
@@ -32,7 +31,7 @@ class HomeActivity : BaseActivity() {
 
     @BindView(R.id.recycler) lateinit var recycler : RecyclerView
     @BindView(R.id.toolbar) lateinit var toolbar : Toolbar
-    lateinit var adapter : ArtistsAdapter
+    lateinit var adapter : HomeAdapter
 
     companion object {
         fun create(context: Context) : Intent = Intent(context, HomeActivity::class.java)
@@ -52,17 +51,9 @@ class HomeActivity : BaseActivity() {
 
         viewModel = ViewModelProviders.of(this, factory)[HomeViewModel::class.java]
 
-        adapter = ArtistsAdapter(viewModel, viewModel.artists)
+        adapter = HomeAdapter(viewModel, viewModel.artists)
 
-        val offset = resources.getDimensionPixelOffset(R.dimen.spacing_normal)
-        recycler.addItemDecoration(object : RecyclerView.ItemDecoration() {
-            override fun getItemOffsets(outRect: Rect, view: View?, parent: RecyclerView?, state: RecyclerView.State?) {
-                outRect.top = offset
-                outRect.bottom = offset
-                outRect.left = offset
-                outRect.right = offset
-            }
-        })
+        recycler.addItemDecoration(GridItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
         recycler.layoutManager = GridLayoutManager(this, 2)
         recycler.adapter = adapter
     }
