@@ -1,6 +1,7 @@
 package mformetal.metallic.domain.api.spotify
 
 import io.reactivex.Single
+import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -10,12 +11,17 @@ import retrofit2.http.Query
  */
 interface SpotifyAPI {
 
-    @GET("artist/{id}/related-spotifyArtists")
+    @GET("artists/{id}/related-artists")
     fun searchSimilarArtists(@Path("id") id: String) : Single<SimilarArtistsResult>
 
     @GET("search?type=artist")
     fun searchArtist(@Query("q") artistName: String) : Single<ArtistsSearchResultWrapper>
 
+	@GET("artists/{id}/albums")
+	fun getAlbumsofArtist(@Path("id") id: String) : Single<AlbumsQueryResult>
+
+	@GET("albums/{id}/tracks")
+	fun getSongsOfAlbum(@Path("id") id: String) : Single<SongsQueryResult>
 }
 
 data class SpotifyAuthResult(
@@ -47,11 +53,19 @@ data class ArtistsSearchResultWrapper(
 )
 
 data class ArtistsSearchResult(
-		val items: List<Item>
+		val items: List<SpotifyItem>
 )
 
-data class Item(
+data class SpotifyItem(
         val id: String, //52ue4x5xVjLx4cw2HEXMhi
         val images: List<SpotifyImage>,
         val name: String //Hey Rosetta!
+)
+
+data class AlbumsQueryResult(
+		val items: List<SpotifyItem>
+)
+
+data class SongsQueryResult(
+		val items: List<SpotifyItem>
 )

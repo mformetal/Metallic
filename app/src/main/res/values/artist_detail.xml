@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="artist_similar_to_current">Artists Similar To %s</string>
+    <string name="clarify_artist_dialog_title">By %s, did you mean…</string>
+
+    <string name="error_search_similar_artists_title">Oh Heavens No!</string>
+    <string name="error_search_similar_artists_body">We couldn\'t find any artists similar to %s.</string>
+</resources>

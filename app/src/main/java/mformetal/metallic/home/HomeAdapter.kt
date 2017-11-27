@@ -16,7 +16,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withC
 import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 import mformetal.metallic.R
-import mformetal.metallic.artistdetail.ArtistDetailActivity
+import mformetal.metallic.similarartist.SimilarArtistsActivity
 import mformetal.metallic.core.GlideApp
 import mformetal.metallic.data.Artist
 import mformetal.metallic.util.inflater
@@ -54,7 +54,7 @@ class HomeAdapter(private val delegate: HomeAdapterClickDelegate, artists: Realm
             artistImage.setOnClickListener {
                 val activity = it.context as Activity
                 val artist = getItem(adapterPosition)!!
-                val pair = ArtistDetailActivity.create(activity, artistImage, artist)
+                val pair = SimilarArtistsActivity.create(activity, artistImage, artist)
                 activity.startActivity(pair.first, pair.second!!.toBundle())
             }
 

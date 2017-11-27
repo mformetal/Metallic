@@ -5,7 +5,7 @@ import android.arch.lifecycle.ViewModelProvider
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import mformetal.metallic.artistdetail.ArtistDetailViewModel
+import mformetal.metallic.similarartist.SimilarArtistsViewModel
 import mformetal.metallic.home.HomeViewModel
 import mformetal.metallic.onboarding.OnboardingViewModel
 
@@ -24,8 +24,8 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ArtistDetailViewModel::class)
-    abstract fun bindArtistDetailViewModel(artistDetailViewModel: ArtistDetailViewModel): ViewModel
+    @ViewModelKey(SimilarArtistsViewModel::class)
+    abstract fun bindArtistDetailViewModel(similarArtistsViewModel: SimilarArtistsViewModel): ViewModel
 
     @Binds
     abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory

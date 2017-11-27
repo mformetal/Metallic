@@ -20,13 +20,13 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             app:dominantMeasurement="width"
-            app:aspectRatio=".5" />
+            app:aspectRatio=".75" />
 
         <TextView
             android:id="@+id/artist_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="start"
+            android:gravity="center"
             android:layout_marginStart="@dimen/spacing_normal"
             android:layout_marginEnd="@dimen/spacing_normal"
             android:layout_gravity="center_vertical"

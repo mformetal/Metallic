@@ -1,4 +1,4 @@
-package mformetal.metallic.artistdetail
+package mformetal.metallic.similarartist
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -31,7 +31,7 @@ class SimilarArtistsAdapter(private val artists: List<Artist>,
         if (inflater == null) {
             inflater = parent.inflater
         }
-        val view = inflater!!.inflate(R.layout.similar_artist_item, parent, false)
+        val view = inflater!!.inflate(R.layout.artist_detail_similar_item, parent, false)
         return SimilarArtistsViewHolder(view)
     }
 

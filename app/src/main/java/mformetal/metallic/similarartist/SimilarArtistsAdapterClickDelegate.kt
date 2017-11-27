@@ -1,4 +1,4 @@
-package mformetal.metallic.artistdetail
+package mformetal.metallic.similarartist
 
 import mformetal.metallic.data.Artist
 

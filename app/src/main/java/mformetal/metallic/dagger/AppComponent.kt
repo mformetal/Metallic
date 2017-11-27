@@ -3,8 +3,8 @@ package mformetal.metallic.dagger
 import dagger.Component
 import dagger.MembersInjector
 import mformetal.metallic.App
-import mformetal.metallic.artistdetail.ArtistDetailComponent
-import mformetal.metallic.artistdetail.ArtistDetailModule
+import mformetal.metallic.similarartist.SimilarArtistsComponent
+import mformetal.metallic.similarartist.SimilarArtistModule
 import mformetal.metallic.home.HomeActivityComponent
 import mformetal.metallic.home.HomeModule
 import mformetal.metallic.onboarding.OnboardingActivityComponent
@@ -19,6 +19,6 @@ interface AppComponent : MembersInjector<App> {
 
     fun home(homeModule: HomeModule) : HomeActivityComponent
 
-    fun artistDetail(artistDetailModule: ArtistDetailModule) : ArtistDetailComponent
+    fun artistDetail(artistDetailModule: SimilarArtistModule) : SimilarArtistsComponent
 
 }

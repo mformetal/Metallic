@@ -1,8 +1,9 @@
-package mformetal.metallic.artistdetail
+package mformetal.metallic.similarartist
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.app.Activity
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -15,6 +16,7 @@ import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.util.Pair
 import android.support.v4.view.ViewCompat
 import android.support.v4.view.animation.FastOutSlowInInterpolator
+import android.support.v7.app.AlertDialog
 import android.support.v7.graphics.Palette
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -41,12 +43,12 @@ import javax.inject.Inject
 /**
  * @author - mbpeele on 11/25/17.
  */
-class ArtistDetailActivity : BaseActivity() {
+class SimilarArtistsActivity : BaseActivity() {
 
     @Inject
     lateinit var factory : ViewModelProvider.Factory
 
-    lateinit var viewModel : ArtistDetailViewModel
+    lateinit var viewModel : SimilarArtistsViewModel
 
     @BindView(R.id.artist_image) lateinit var image: ImageView
     @BindView(R.id.artist_name) lateinit var name: TextView
@@ -57,12 +59,22 @@ class ArtistDetailActivity : BaseActivity() {
         private const val KEY_ARTIST_NAME = "artistNameKey"
 
         fun create(activity: Activity, imageView: ImageView, artist: Artist) : Pair<Intent, ActivityOptionsCompat> {
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
-                    Pair(activity.findViewById(android.R.id.statusBarBackground), Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME),
-                    Pair(activity.findViewById(android.R.id.navigationBarBackground), Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME),
-                    Pair(imageView, ViewCompat.getTransitionName(imageView)))
+            val onScreenNavigationBar = activity.findViewById<View>(android.R.id.navigationBarBackground)
+            val statusBarPair = Pair(activity.findViewById<View>(android.R.id.statusBarBackground), Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME)
+            val imageViewPair = Pair<View, String>(imageView, ViewCompat.getTransitionName(imageView))
 
-            val intent = Intent(activity, ArtistDetailActivity::class.java)
+            val options = if (onScreenNavigationBar == null) {
+                ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
+                        statusBarPair,
+                        imageViewPair)
+            } else {
+                ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
+                        Pair(onScreenNavigationBar, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME),
+                        imageViewPair,
+                        statusBarPair)
+            }
+
+            val intent = Intent(activity, SimilarArtistsActivity::class.java)
             intent.putExtra(KEY_ARTIST_NAME, artist.name)
             return Pair(intent, options)
         }
@@ -101,23 +113,41 @@ class ArtistDetailActivity : BaseActivity() {
         }
 
         app.component
-                .artistDetail(ArtistDetailModule())
+                .artistDetail(SimilarArtistModule())
                 .injectMembers(this)
 
-        viewModel = ViewModelProviders.of(this, factory)[ArtistDetailViewModel::class.java]
+        viewModel = ViewModelProviders.of(this, factory)[SimilarArtistsViewModel::class.java]
 
-        val artist = viewModel.getArtistByName(intent.getStringExtra(KEY_ARTIST_NAME))
+        viewModel.setCurrentArtist(intent.getStringExtra(KEY_ARTIST_NAME))
+
+        val artist = viewModel.currentArtist
 
         ViewCompat.setTransitionName(image, artist.name)
 
-        name.text = artist.name
+        name.text = getString(R.string.artist_similar_to_current, artist.name)
 
         recycler.addItemDecoration(GridItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
-        recycler.layoutManager = GridLayoutManager(this, 2)
+        recycler.layoutManager = GridLayoutManager(this, 3)
 
         loadImage(artist)
 
         viewModel.searchForSimilarArtists(artist)
+
+        viewModel.observeSearchError()
+                .observe(this, Observer {
+                    AlertDialog.Builder(this)
+                            .setTitle(R.string.error_search_similar_artists_title)
+                            .setMessage(getString(R.string.error_search_similar_artists_body, viewModel.currentArtist.name))
+                            .setPositiveButton(android.R.string.ok, { dialogInterface, _ ->
+                                dialogInterface.dismiss()
+                                finish()
+                            })
+                            .create()
+                            .show()
+
+                    // set empty state for RecyclerView
+                })
+
         viewModel.observeSimilarArtists()
                 .observe(this, safeObserver {
                     recycler.adapter = SimilarArtistsAdapter(it, object : SimilarArtistsAdapterClickDelegate {
@@ -128,12 +158,24 @@ class ArtistDetailActivity : BaseActivity() {
                 })
 
         viewModel.observeClarifyArtists()
-                .observe(this, safeObserver {
-                    recycler.adapter = SimilarArtistsAdapter(it, object : SimilarArtistsAdapterClickDelegate {
-                        override fun onArtistClicked(artist: Artist) {
-                            viewModel.onClarifyingArtistClicked(artist)
-                        }
-                    })
+                .observe(this, safeObserver { artists ->
+                    val items = arrayOfNulls<CharSequence>(artists.size)
+                    for (i in artists.indices) {
+                        val item = artists[i].name
+                        items[i] = item
+                    }
+
+                    AlertDialog.Builder(this)
+                            .setItems(items, { dialogInterface, index ->
+                                dialogInterface.dismiss()
+
+                                val clarifyingArtist = artists[index]
+                                viewModel.onClarifyingArtistClicked(clarifyingArtist)
+                            })
+                            .setTitle(getString(R.string.clarify_artist_dialog_title, viewModel.currentArtist.name))
+                            .setCancelable(false)
+                            .create()
+                            .show()
                 })
     }
 
