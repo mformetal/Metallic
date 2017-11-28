@@ -13,6 +13,7 @@ import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.content.ContextCompat
 import android.support.v4.util.Pair
 import android.support.v4.view.ViewCompat
 import android.support.v4.view.animation.FastOutSlowInInterpolator
@@ -21,6 +22,7 @@ import android.support.v7.graphics.Palette
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.transition.Transition
 import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
@@ -87,23 +89,6 @@ class SimilarArtistsActivity : BaseActivity() {
         ButterKnife.bind(this)
 
         postponeEnterTransition()
-
-        val root = findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as ViewGroup
-        val viewTreeObserver = root.viewTreeObserver
-        viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener  {
-            override fun onPreDraw(): Boolean {
-                if (viewTreeObserver.isAlive) {
-                    viewTreeObserver.removeOnPreDrawListener(this)
-                } else {
-                    root.viewTreeObserver.removeOnPreDrawListener(this)
-                }
-
-                slideUpView(root,
-                        resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
-
-                return false
-            }
-        })
 
         setSupportActionBar(toolbar)
         supportActionBar!!.apply {
@@ -188,24 +173,6 @@ class SimilarArtistsActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun slideUpView(root: ViewGroup, duration: Long) {
-        val viewGroup = root.getChildAt(1) as ViewGroup
-        val offset = viewGroup.height / 2f
-        for (i in 0 until viewGroup.childCount) {
-            val view = viewGroup.getChildAt(i)
-            view.translationY = offset
-            view.alpha = 0f
-
-            view.animate()
-                    .translationY(0f)
-                    .alpha(1f)
-                    .setDuration(duration)
-                    .setInterpolator(DecelerateInterpolator())
-                    .setStartDelay((150 + 50 * i).toLong())
-                    .start()
-        }
-    }
-
     private fun loadImage(artist: Artist) {
         GlideApp.with(this)
                 .asBitmap()
@@ -259,6 +226,26 @@ class SimilarArtistsActivity : BaseActivity() {
                                         statusBarColorAnim.duration = 1000
                                         statusBarColorAnim.interpolator = FastOutSlowInInterpolator()
                                         statusBarColorAnim.start()
+
+                                        window.sharedElementEnterTransition.addListener(object : Transition.TransitionListener {
+                                            override fun onTransitionEnd(p0: Transition?) { }
+
+                                            override fun onTransitionResume(p0: Transition?) { }
+
+                                            override fun onTransitionPause(p0: Transition?) { }
+
+                                            override fun onTransitionCancel(p0: Transition?) { }
+
+                                            override fun onTransitionStart(p0: Transition?) {
+                                                val accentColor = ContextCompat.getColor(this@SimilarArtistsActivity,
+                                                        R.color.colorPrimary)
+                                                val returnAnimation = ObjectAnimator.ofArgb(window,
+                                                        "statusBarColor", statusBarColor, accentColor)
+                                                returnAnimation.duration = 1000
+                                                returnAnimation.interpolator = FastOutSlowInInterpolator()
+                                                returnAnimation.start()
+                                            }
+                                        })
                                     }
                                 }
                         return false
