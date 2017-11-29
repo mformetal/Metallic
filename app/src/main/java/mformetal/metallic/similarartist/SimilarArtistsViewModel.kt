@@ -36,6 +36,7 @@ class SimilarArtistsViewModel @Inject constructor(private val spotifyAPI: Spotif
     override fun onCleared() {
         super.onCleared()
         realm.close()
+        compositeDisposable.clear()
     }
 
     fun observeSimilarArtists() : LiveData<List<Artist>> = similarArtistsData
@@ -105,6 +106,9 @@ class SimilarArtistsViewModel @Inject constructor(private val spotifyAPI: Spotif
                             })
                         }
                     }
+                    .doOnSubscribe {
+                        compositeDisposable.add(it)
+                    }
                     .subscribe()
         } else {
             searchForSimilarArtists(currentArtist)
@@ -163,6 +167,9 @@ class SimilarArtistsViewModel @Inject constructor(private val spotifyAPI: Spotif
                         }
                     }
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe {
+                        compositeDisposable.add(it)
+                    }
                     .subscribe({
                         if (it.first) {
                             similarArtistsData.value = it.second
@@ -184,6 +191,9 @@ class SimilarArtistsViewModel @Inject constructor(private val spotifyAPI: Spotif
                         }
                     }
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe {
+                        compositeDisposable.add(it)
+                    }
                     .subscribe(Consumer {
                         similarArtistsData.value = it
                     })

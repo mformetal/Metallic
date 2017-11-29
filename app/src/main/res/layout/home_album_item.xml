@@ -14,26 +14,41 @@
         android:orientation="vertical" >
 
         <mformetal.metallic.util.AspectRatioImageView
-            android:id="@+id/artist_image"
+            android:id="@+id/album_image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             app:dominantMeasurement="width"
-            app:aspectRatio=".5" />
+            app:aspectRatio=".75" />
 
         <TextView
-            android:id="@+id/artist_name"
+            android:id="@+id/album_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:gravity="start"
             android:layout_margin="@dimen/spacing_normal"
             android:layout_gravity="center_vertical"
             android:maxLines="1"
             android:singleLine="true"
             android:ellipsize="end"
             android:textAppearance="@android:style/TextAppearance.Material.Body1"
-            tools:text="Really Long String to Demonstrate if its too long for the screen yo" />
+            tools:text="Album Name" />
+
+        <TextView
+            android:id="@+id/created_by"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:layout_marginStart="@dimen/spacing_normal"
+            android:layout_marginBottom="@dimen/spacing_tiny"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:layout_gravity="center_vertical"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textAppearance="@android:style/TextAppearance.Material.Caption"
+            tools:text="Artist" />
 
     </LinearLayout>
 

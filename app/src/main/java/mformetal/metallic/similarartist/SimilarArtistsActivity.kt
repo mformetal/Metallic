@@ -21,11 +21,13 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.graphics.Palette
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.support.v7.widget.Toolbar
 import android.transition.Transition
 import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -56,6 +58,7 @@ class SimilarArtistsActivity : BaseActivity() {
     @BindView(R.id.artist_name) lateinit var name: TextView
     @BindView(R.id.toolbar) lateinit var toolbar: Toolbar
     @BindView(R.id.recycler) lateinit var recycler: RecyclerView
+    @BindView(R.id.progress_bar) lateinit var progressBar: ProgressBar
 
     companion object {
         private const val KEY_ARTIST_NAME = "artistNameKey"
@@ -112,7 +115,7 @@ class SimilarArtistsActivity : BaseActivity() {
         name.text = getString(R.string.artist_similar_to_current, artist.name)
 
         recycler.addItemDecoration(GridItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
-        recycler.layoutManager = GridLayoutManager(this, 3)
+        recycler.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
         loadImage(artist)
 
@@ -135,6 +138,8 @@ class SimilarArtistsActivity : BaseActivity() {
 
         viewModel.observeSimilarArtists()
                 .observe(this, safeObserver {
+                    progressBar.visibility = View.GONE
+
                     recycler.adapter = SimilarArtistsAdapter(it, object : SimilarArtistsAdapterClickDelegate {
                         override fun onArtistClicked(artist: Artist) {
                             viewModel.onSimilarArtistClicked(artist)

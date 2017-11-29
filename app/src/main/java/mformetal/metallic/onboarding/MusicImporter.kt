@@ -65,11 +65,12 @@ class MusicImporter @Inject constructor(context: Context) {
         albumCursor.use {
             while (it.moveToNext() && !it.isClosed) {
                 val albumName = it.getString(it.getColumnIndex(MediaStore.Audio.Albums.ALBUM))
-                if (albums.none { it.name == albumName }) {
+                if (albumName.isNotBlank() && albums.none { it.name!!.toLowerCase() == albumName.toLowerCase() }) {
                     val songs = getSongs(artistName, albumName)
                     val album = Album(name = albumName,
                             artworkUrl = it.getString(it.getColumnIndex("AlbumArtLocation")),
-                            songs = songs)
+                            songs = songs,
+                            createdBy = artistName)
                     albums.add(album)
                 }
             }
@@ -90,8 +91,10 @@ class MusicImporter @Inject constructor(context: Context) {
             while (it.moveToNext()) {
                 val songTitle = it.getString(it.getColumnIndex(MediaStore.Audio.Media.TITLE))
 
-                if (songs.none { it.name == songTitle }) {
-                    val song = Song(name = songTitle)
+                if (songs.none { it.name!!.toLowerCase() == songTitle.toLowerCase() }) {
+                    val song = Song(name = songTitle,
+                            onAlbum = albumName,
+                            createdBy = artistName)
                     songs.add(song)
                 }
             }
