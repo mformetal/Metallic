@@ -19,32 +19,29 @@ import javax.inject.Inject
 class MusicImporter @Inject constructor(context: Context) {
 
     private val contentResolver = context.applicationContext.contentResolver
-    private val URI = Uri.parse("content://com.google.android.music.MusicContent/audio")
+    private val BASE_URI = Uri.parse("content://com.google.android.music.MusicContent")
+    private val ARTISTS_URI = BASE_URI.buildUpon().appendPath("artists").build()
+    private val ALBUMS_URI = BASE_URI.buildUpon().appendPath("album").build()
+    private val SONGS_URI = BASE_URI.buildUpon().appendPath("audio").build()
 
     fun getArtists() : Flowable<Artist> {
        return Flowable.create<Artist>({
-           val alreadySeenNames = mutableSetOf<String>()
-
-           val cursor = contentResolver.query(URI,
-                    arrayOf(MediaStore.Audio.Artists.ARTIST,
-                            "ArtistArtLocation"),
-                    null, null, null)
+           val cursor = contentResolver.query(ARTISTS_URI,
+                   arrayOf("artist", "artworkUrl"),
+                   null, null, null)
 
            it.setDisposable(Disposables.fromRunnable {
                cursor.close()
            })
 
            while (!cursor.isClosed && cursor.moveToNext()) {
-               val artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST))
-               if (alreadySeenNames.doesNotContain(artistName.toLowerCase())) {
-                   alreadySeenNames.add(artistName.toLowerCase())
+               val artistName = cursor.getString(cursor.getColumnIndex("artist"))
 
-                   val albums = getAlbums(artistName)
-                   val artist = Artist(name = artistName,
-                           artworkUrl = cursor.getString(cursor.getColumnIndex("ArtistArtLocation")),
-                           albums = albums)
-                   it.onNext(artist)
-               }
+               val albums = getAlbums(artistName)
+               val artist = Artist(name = artistName,
+                       artworkUrl = cursor.getString(cursor.getColumnIndex("artworkUrl")),
+                       albums = albums)
+               it.onNext(artist)
            }
 
            cursor.close()
@@ -56,19 +53,19 @@ class MusicImporter @Inject constructor(context: Context) {
     private fun getAlbums(artistName: String) : RealmList<Album> {
         val albums = RealmList<Album>()
 
-        val albumCursor = contentResolver.query(URI,
-                arrayOf(MediaStore.Audio.Albums.ALBUM,
-                        "AlbumArtLocation"),
-                MediaStore.Audio.Albums.ARTIST + " = ? ",
-                arrayOf(artistName), null)
+        val albumCursor = contentResolver.query(ALBUMS_URI,
+                arrayOf("album_name", "album_artist", "artworkUrl"),
+                null, null, null)
 
         albumCursor.use {
             while (it.moveToNext() && !it.isClosed) {
-                val albumName = it.getString(it.getColumnIndex(MediaStore.Audio.Albums.ALBUM))
-                if (albumName.isNotBlank() && albums.none { it.name!!.toLowerCase() == albumName.toLowerCase() }) {
+                val albumArtist = it.getString(it.getColumnIndex("album_artist"))
+                if (albumArtist == artistName) {
+                    val albumName = it.getString(it.getColumnIndex("album_name"))
+
                     val songs = getSongs(artistName, albumName)
                     val album = Album(name = albumName,
-                            artworkUrl = it.getString(it.getColumnIndex("AlbumArtLocation")),
+                            artworkUrl = it.getString(it.getColumnIndex("artworkUrl")),
                             songs = songs,
                             createdBy = artistName)
                     albums.add(album)
@@ -82,21 +79,19 @@ class MusicImporter @Inject constructor(context: Context) {
     private fun getSongs(artistName: String, albumName: String) : RealmList<Song> {
         val songs = RealmList<Song>()
 
-        val songsCursor = contentResolver.query(URI,
-                arrayOf(MediaStore.Audio.Media.TITLE),
-                MediaStore.Audio.Media.ARTIST + " = ? AND " + MediaStore.Audio.Media.ALBUM + " = ?",
+        val songsCursor = contentResolver.query(SONGS_URI,
+                arrayOf("title"),
+                "artist = ? AND album = ?",
                 arrayOf(artistName, albumName), null)
 
         songsCursor.use {
             while (it.moveToNext()) {
                 val songTitle = it.getString(it.getColumnIndex(MediaStore.Audio.Media.TITLE))
 
-                if (songs.none { it.name!!.toLowerCase() == songTitle.toLowerCase() }) {
-                    val song = Song(name = songTitle,
-                            onAlbum = albumName,
-                            createdBy = artistName)
-                    songs.add(song)
-                }
+                val song = Song(name = songTitle,
+                        onAlbum = albumName,
+                        createdBy = artistName)
+                songs.add(song)
             }
         }
 
