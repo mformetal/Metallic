@@ -20,14 +20,14 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             app:dominantMeasurement="width"
-            app:aspectRatio=".75" />
+            app:aspectRatio="1" />
 
         <TextView
             android:id="@+id/album_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="start"
-            android:layout_margin="@dimen/spacing_normal"
+            android:layout_marginStart="@dimen/spacing_normal"
             android:layout_gravity="center_vertical"
             android:maxLines="1"
             android:singleLine="true"
@@ -41,7 +41,6 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:layout_marginStart="@dimen/spacing_normal"
-            android:layout_marginBottom="@dimen/spacing_tiny"
             android:layout_marginTop="@dimen/spacing_tiny"
             android:layout_gravity="center_vertical"
             android:maxLines="1"

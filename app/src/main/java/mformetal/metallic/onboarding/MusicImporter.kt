@@ -54,7 +54,7 @@ class MusicImporter @Inject constructor(context: Context) {
         val albums = RealmList<Album>()
 
         val albumCursor = contentResolver.query(ALBUMS_URI,
-                arrayOf("album_name", "album_artist", "artworkUrl"),
+                arrayOf("album_name", "album_artist", "album_art"),
                 null, null, null)
 
         albumCursor.use {
@@ -65,7 +65,7 @@ class MusicImporter @Inject constructor(context: Context) {
 
                     val songs = getSongs(artistName, albumName)
                     val album = Album(name = albumName,
-                            artworkUrl = it.getString(it.getColumnIndex("artworkUrl")),
+                            artworkUrl = it.getString(it.getColumnIndex("album_art")),
                             songs = songs,
                             createdBy = artistName)
                     albums.add(album)

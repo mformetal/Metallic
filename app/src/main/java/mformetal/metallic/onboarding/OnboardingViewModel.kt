@@ -1,7 +1,6 @@
 package mformetal.metallic.onboarding
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -10,6 +9,7 @@ import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import mformetal.metallic.core.PreferencesRepository
 import mformetal.metallic.data.Artist
+import mformetal.metallic.util.SingleLiveEvent
 import javax.inject.Inject
 
 /**
@@ -19,7 +19,7 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
                                               private val preferencesRepository: PreferencesRepository) : ViewModel() {
 
     private var importDisposable : Disposable ?= null
-    private val importStatusLiveData : MutableLiveData<Boolean> = MutableLiveData()
+    private val importStatusLiveData = SingleLiveEvent<ImportStatus>()
 
     val hasUserOnboarded : Boolean = preferencesRepository.hasUserOnboarded()
 
@@ -28,10 +28,7 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
         importDisposable?.dispose()
     }
 
-    fun observeImportStatusChanges() : LiveData<Boolean> {
-        if (importStatusLiveData.value == null) {
-            importStatusLiveData.value = false
-        }
+    fun observeImportStatusChanges() : LiveData<ImportStatus> {
         return importStatusLiveData
     }
 
@@ -47,7 +44,7 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
                         Completable.create { emitter ->
                             val realm = Realm.getDefaultInstance()
                             realm.executeTransactionAsync({
-                                it.insert(artists)
+                                it.insertOrUpdate(artists)
                             }, {
                                 emitter.onComplete()
                             }, {
@@ -55,10 +52,14 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
                             })
                         }
                     }
+                    .doOnSubscribe {
+                        importStatusLiveData.value = ImportStatus.START
+                    }
+                    .doOnComplete {
+                        importStatusLiveData.value = ImportStatus.FINISH
+                    }
                     .subscribe {
                         preferencesRepository.setHasOnboarded()
-
-                        importStatusLiveData.value = true
                     }
         }
     }

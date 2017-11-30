@@ -31,4 +31,20 @@ class HomeViewModel @Inject constructor(): ViewModel() {
                 .contains("name", query, Case.INSENSITIVE)
                 .findAllSortedAsync("name", Sort.ASCENDING)
     }
+
+    fun addArtistToWatchList(artist: Artist) {
+        if (!artist.isWatching) {
+            realm.executeTransaction {
+                artist.isWatching = true
+            }
+        }
+    }
+
+    fun removeArtistFromWatchList(artist: Artist) {
+        if (artist.isWatching) {
+            realm.executeTransaction {
+                artist.isWatching = false
+            }
+        }
+    }
 }

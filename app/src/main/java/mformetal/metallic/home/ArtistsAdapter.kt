@@ -2,30 +2,30 @@ package mformetal.metallic.home
 
 import android.app.Activity
 import android.support.v4.view.ViewCompat
+import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
-import io.realm.RealmObject
 import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 import mformetal.metallic.R
 import mformetal.metallic.similarartist.SimilarArtistsActivity
 import mformetal.metallic.core.GlideApp
-import mformetal.metallic.data.Album
 import mformetal.metallic.data.Artist
-import mformetal.metallic.data.Song
 import mformetal.metallic.util.inflater
 
 /**
  * @author - mbpeele on 11/23/17.
  */
-class ArtistsAdapter(results: RealmResults<Artist>) : RealmRecyclerViewAdapter<Artist, ArtistsAdapter.ArtistViewHolder>(results, true) {
+class ArtistsAdapter(val delegate: HomeAdapterClickDelegate,
+                     results: RealmResults<Artist>) : RealmRecyclerViewAdapter<Artist, ArtistsAdapter.ArtistViewHolder>(results, false) {
 
     private var inflater : LayoutInflater?= null
 
@@ -47,15 +47,34 @@ class ArtistsAdapter(results: RealmResults<Artist>) : RealmRecyclerViewAdapter<A
 
         @BindView(R.id.artist_name) lateinit var artistName : TextView
         @BindView(R.id.artist_image) lateinit var artistImage : ImageView
+        @BindView(R.id.artist_options) lateinit var artistOptions : ImageButton
 
         init {
             ButterKnife.bind(this, itemView)
 
             artistImage.setOnClickListener {
                 val activity = it.context as Activity
-                val artist = getItem(adapterPosition)!! as Artist
+                val artist = getItem(adapterPosition)!!
                 val pair = SimilarArtistsActivity.create(activity, artistImage, artist)
                 activity.startActivity(pair.first, pair.second!!.toBundle())
+            }
+
+            artistOptions.setOnClickListener {
+                val popup = PopupMenu(it.context, it)
+                popup.menuInflater.inflate(R.menu.home_artist_item_menu, popup.menu)
+                popup.setOnMenuItemClickListener {
+                    val artist = getItem(adapterPosition)!!
+                    when (it.itemId) {
+                        R.id.add_to_watchlist -> {
+                            delegate.addArtistToWatchList(artist)
+                        }
+                        R.id.remove_from_watch_list -> {
+                            delegate.removeArtistFromWatchList(artist)
+                        }
+                    }
+                    true
+                }
+                popup.show()
             }
         }
 

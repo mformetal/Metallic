@@ -15,6 +15,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import mformetal.metallic.R
 import mformetal.metallic.core.BaseActivity
+import mformetal.metallic.data.Artist
 import mformetal.metallic.util.GridItemDecoration
 import mformetal.metallic.util.VerticalItemDecoration
 import javax.inject.Inject
@@ -54,7 +55,7 @@ class HomeActivity : BaseActivity() {
 
         recycler.addItemDecoration(GridItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
         recycler.layoutManager = GridLayoutManager(this, 2)
-        recycler.adapter =  ArtistsAdapter(viewModel.artists)
+        recycler.adapter =  ArtistsAdapter(clickDelegate, viewModel.artists)
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) { }
@@ -68,7 +69,7 @@ class HomeActivity : BaseActivity() {
                         recycler.addItemDecoration(GridItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
 
                         recycler.layoutManager = GridLayoutManager(this@HomeActivity, 2)
-                        recycler.adapter = ArtistsAdapter(viewModel.artists)
+                        recycler.adapter = ArtistsAdapter(clickDelegate, viewModel.artists)
                     }
                     getString(R.string.tab_albums) -> {
                         recycler.removeItemDecorationAt(0)
@@ -109,5 +110,15 @@ class HomeActivity : BaseActivity() {
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private val clickDelegate = object : HomeAdapterClickDelegate {
+        override fun addArtistToWatchList(artist: Artist) {
+            viewModel.addArtistToWatchList(artist)
+        }
+
+        override fun removeArtistFromWatchList(artist: Artist) {
+            viewModel.removeArtistFromWatchList(artist)
+        }
     }
 }
