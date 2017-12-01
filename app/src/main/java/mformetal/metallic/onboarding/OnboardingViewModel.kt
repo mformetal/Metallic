@@ -1,8 +1,8 @@
 package mformetal.metallic.onboarding
 
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -14,7 +14,9 @@ import mformetal.metallic.data.Album
 import mformetal.metallic.data.Artist
 import mformetal.metallic.data.Song
 import mformetal.metallic.domain.api.spotify.SpotifyAPI
-import mformetal.metallic.util.SingleLiveEvent
+import mformetal.metallic.util.SingleLiveData
+import mformetal.metallic.util.TimedLiveData
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -25,7 +27,8 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
                                               private val preferencesRepository: PreferencesRepository) : ViewModel() {
 
     private var importDisposable : Disposable ?= null
-    private val importStatusLiveData = SingleLiveEvent<ImportStatus>()
+    private val importStatusLiveData = SingleLiveData<ImportStatus>()
+    private val locallySavedArtistLiveData = TimedLiveData<Artist>(interval = 5, timeUnit = TimeUnit.SECONDS)
 
     val hasUserOnboarded : Boolean = preferencesRepository.hasUserOnboarded()
 
@@ -38,6 +41,10 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
         return importStatusLiveData
     }
 
+    fun observeLocallySavedArtists() : LiveData<Artist> {
+        return locallySavedArtistLiveData
+    }
+
     fun import() {
         if (importDisposable == null) {
             importDisposable = importer.getArtists()
@@ -46,13 +53,13 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
                         updateArtistFromSpotify(it)
                     }
                     .observeOn(AndroidSchedulers.mainThread())
-                    .flatMapCompletable { artists ->
-                        Completable.create { emitter ->
+                    .flatMapSingle { artist ->
+                        Single.create<Artist> { emitter ->
                             val realm = Realm.getDefaultInstance()
                             realm.executeTransactionAsync({
-                                it.insertOrUpdate(artists)
+                                it.insertOrUpdate(artist)
                             }, {
-                                emitter.onComplete()
+                                emitter.onSuccess(artist)
                             }, {
                                 emitter.onError(it)
                             })
@@ -65,7 +72,9 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
                         preferencesRepository.setHasOnboarded()
                         importStatusLiveData.value = ImportStatus.FINISH
                     }
-                    .subscribe()
+                    .subscribe {
+                        locallySavedArtistLiveData.value = it
+                    }
         }
     }
 

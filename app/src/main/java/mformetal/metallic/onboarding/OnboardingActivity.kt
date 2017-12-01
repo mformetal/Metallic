@@ -1,13 +1,41 @@
 package mformetal.metallic.onboarding
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.LayerDrawable
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.animation.FastOutSlowInInterpolator
+import android.support.v7.graphics.Palette
+import android.transition.Transition
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import butterknife.BindView
+import butterknife.ButterKnife
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import mformetal.metallic.R
 import mformetal.metallic.core.BaseActivity
+import mformetal.metallic.core.GlideApp
+import mformetal.metallic.data.Artist
 import mformetal.metallic.home.HomeActivity
+import mformetal.metallic.util.ColorsUtils
 import mformetal.metallic.util.safeObserver
 import javax.inject.Inject
 
@@ -23,6 +51,11 @@ class OnboardingActivity : BaseActivity() {
 
     lateinit var viewModel : OnboardingViewModel
 
+    @BindView(R.id.current_artist_image)
+    lateinit var imageView : ImageView
+    @BindView(R.id.current_artist_name)
+    lateinit var textView : TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -37,6 +70,9 @@ class OnboardingActivity : BaseActivity() {
             return
         }
 
+        setContentView(R.layout.onboarding)
+        ButterKnife.bind(this)
+
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             viewModel.import()
@@ -45,6 +81,11 @@ class OnboardingActivity : BaseActivity() {
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
                     REQUEST_PERMISSION_EXTERNAL_STORAGE)
         }
+
+        viewModel.observeLocallySavedArtists()
+                .observe(this, safeObserver {
+                    showArtistPreview(it)
+                })
 
         viewModel.observeImportStatusChanges()
                 .observe(this, safeObserver {
@@ -81,5 +122,92 @@ class OnboardingActivity : BaseActivity() {
         val intent = HomeActivity.create(this)
         startActivity(intent)
         finish()
+    }
+
+    private fun showArtistPreview(artist: Artist) {
+        textView.text = artist.name
+
+        GlideApp.with(this)
+                .asBitmap()
+                .load(artist.artworkUrl)
+                .fitCenter()
+                .transition(BitmapTransitionOptions.withCrossFade())
+                .listener(object : RequestListener<Bitmap> {
+                    override fun onResourceReady(resource: Bitmap, model: Any?, target: Target<Bitmap>?,
+                                                 dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                        Palette.from(resource)
+                                .maximumColorCount(3)
+                                .clearFilters()
+                                .generate { palette ->
+                                    val decorView = window.decorView.background
+                                    if (decorView is LayerDrawable) {
+                                        val launcherIcon = decorView.findDrawableByLayerId(R.id.icon)
+                                        if (launcherIcon.alpha == 255) {
+                                            val alphaAnim = ValueAnimator.ofInt(launcherIcon.alpha, 0)
+                                            alphaAnim.duration = 600
+                                            alphaAnim.interpolator = FastOutSlowInInterpolator()
+                                            alphaAnim.addUpdateListener {
+                                                launcherIcon.alpha = it.animatedValue as Int
+                                            }
+                                            alphaAnim.start()
+                                        }
+                                    }
+                                    @ColorsUtils.Lightness val lightness = ColorsUtils.isDark(palette)
+                                    val isDark = if (lightness == ColorsUtils.LIGHTNESS_UNKNOWN) {
+                                        ColorsUtils.isDark(resource, resource.width / 2, 0)
+                                    } else {
+                                        lightness == ColorsUtils.IS_DARK
+                                    }
+
+                                    var statusBarColor = window.statusBarColor
+                                    val topColor = ColorsUtils.getMostPopulousSwatch(palette)
+                                    if (topColor != null && (isDark || Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)) {
+                                        statusBarColor = ColorsUtils.scrimify(topColor.rgb,
+                                                isDark, .075f)
+
+                                        if (!isDark && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                            val flags = window.decorView.systemUiVisibility
+                                            window.decorView.systemUiVisibility =
+                                                    flags.or(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
+                                        }
+                                    }
+
+                                    if (statusBarColor != window.statusBarColor) {
+                                        val statusBarColorAnim = ObjectAnimator.ofArgb(window,
+                                                "statusBarColor", window.statusBarColor, statusBarColor)
+                                        statusBarColorAnim.duration = 1000
+                                        statusBarColorAnim.interpolator = FastOutSlowInInterpolator()
+                                        statusBarColorAnim.start()
+
+                                        window.sharedElementEnterTransition.addListener(object : Transition.TransitionListener {
+                                            override fun onTransitionEnd(p0: Transition?) { }
+
+                                            override fun onTransitionResume(p0: Transition?) { }
+
+                                            override fun onTransitionPause(p0: Transition?) { }
+
+                                            override fun onTransitionCancel(p0: Transition?) { }
+
+                                            override fun onTransitionStart(p0: Transition?) {
+                                                val accentColor = ContextCompat.getColor(this@OnboardingActivity,
+                                                        R.color.colorPrimary)
+                                                val returnAnimation = ObjectAnimator.ofArgb(window,
+                                                        "statusBarColor", statusBarColor, accentColor)
+                                                returnAnimation.duration = 1000
+                                                returnAnimation.interpolator = FastOutSlowInInterpolator()
+                                                returnAnimation.start()
+                                            }
+                                        })
+                                    }
+                                }
+                        return false
+                    }
+
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?,
+                                              isFirstResource: Boolean): Boolean {
+                        return false
+                    }
+                })
+                .into(imageView)
     }
 }

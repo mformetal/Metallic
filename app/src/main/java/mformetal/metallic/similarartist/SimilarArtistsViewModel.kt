@@ -3,20 +3,14 @@ package mformetal.metallic.similarartist
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import io.reactivex.Completable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
-import io.realm.RealmList
-import mformetal.metallic.data.Album
 import mformetal.metallic.data.Artist
-import mformetal.metallic.data.Song
 import mformetal.metallic.domain.api.spotify.SpotifyAPI
-import mformetal.metallic.util.SingleLiveEvent
+import mformetal.metallic.util.SingleLiveData
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -29,7 +23,7 @@ class SimilarArtistsViewModel @Inject constructor(private val spotifyAPI: Spotif
 
     private val realm = Realm.getDefaultInstance()
     private val similarArtistsData = MutableLiveData<List<Artist>>()
-    private val errorSimilarArtistsData = SingleLiveEvent<Unit>()
+    private val errorSimilarArtistsData = SingleLiveData<Unit>()
     private val compositeDisposable = CompositeDisposable()
 
     override fun onCleared() {
@@ -53,23 +47,30 @@ class SimilarArtistsViewModel @Inject constructor(private val spotifyAPI: Spotif
     }
 
     fun searchForSimilarArtists(artist: Artist) {
-        spotifyAPI.searchSimilarArtists(artist.spofityId!!)
-                .subscribeOn(Schedulers.io())
-                .delay(1, TimeUnit.SECONDS)
-                .map {
-                    it.artists.map {
-                        Artist(name = it.name,
-                                spofityId = it.id,
-                                artworkUrl = it.images.getOrNull(1)?.url ?: "")
+        val id = artist.spofityId
+        if (id == null) {
+            errorSimilarArtistsData.value = Unit
+        } else {
+            spotifyAPI.searchSimilarArtists(id)
+                    .subscribeOn(Schedulers.io())
+                    .delay(1, TimeUnit.SECONDS)
+                    .map {
+                        it.artists.map {
+                            Artist(name = it.name,
+                                    spofityId = it.id,
+                                    artworkUrl = it.images.getOrNull(1)?.url ?: "")
+                        }
                     }
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    compositeDisposable.add(it)
-                }
-                .subscribe(Consumer {
-                    similarArtistsData.value = it
-                })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe {
+                        compositeDisposable.add(it)
+                    }
+                    .subscribe({
+                        similarArtistsData.value = it
+                    }, {
+                        errorSimilarArtistsData.value = Unit
+                    })
+        }
     }
 }
 

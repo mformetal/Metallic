@@ -5,14 +5,12 @@ import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import mformetal.metallic.App
-import mformetal.metallic.BuildConfig
 import mformetal.metallic.R
 import mformetal.metallic.core.PreferencesRepository
 import mformetal.metallic.core.SharedPreferencesRepository
 import mformetal.metallic.domain.api.spotify.SpotifyAPI
 import mformetal.metallic.domain.api.spotify.SpotifyAuthInterceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -49,15 +47,7 @@ class AppModule(private val app: App) {
 
     @Provides
     @Singleton
-    fun okHttpBuilder() : OkHttpClient.Builder {
-        val builder =  OkHttpClient.Builder()
-        if (BuildConfig.DEBUG) {
-            builder.addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
-        }
-        return builder
-    }
+    fun okHttpBuilder() : OkHttpClient.Builder = OkHttpClient.Builder()
 
     @Provides
     @Singleton
