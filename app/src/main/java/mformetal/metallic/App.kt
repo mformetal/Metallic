@@ -17,6 +17,9 @@ class App : Application() {
 
     lateinit var component : AppComponent
 
+    @Inject
+    lateinit var jobManager : JobManager
+
     override fun onCreate() {
         super.onCreate()
 

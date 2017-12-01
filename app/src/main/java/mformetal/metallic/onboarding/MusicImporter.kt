@@ -52,6 +52,9 @@ class MusicImporter @Inject constructor(context: Context) {
     private fun getAlbums(artistName: String) : RealmList<Album> {
         val albums = RealmList<Album>()
 
+        // Can't use selection here
+        // Can't figure out the right URI to use
+        // Results in stupid slow query, oh well
         val albumCursor = contentResolver.query(ALBUMS_URI,
                 arrayOf("album_name", "album_artist", "album_art", "album_year"),
                 null, null, null)

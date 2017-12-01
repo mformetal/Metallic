@@ -53,86 +53,23 @@ class SimilarArtistsViewModel @Inject constructor(private val spotifyAPI: Spotif
     }
 
     fun searchForSimilarArtists(artist: Artist) {
-        val name = artist.name
-        val spotifyId = artist.spofityId
-
-        if (spotifyId == null) {
-            spotifyAPI.searchArtist(artist.name!!)
-                    .subscribeOn(Schedulers.io())
-                    .delay(1, TimeUnit.SECONDS)
-                    .flatMap {
-                        val items = it.artists.items
-                        if (items.size == 1) {
-                            val newId = items[0].id
-                            val localRealm = Realm.getDefaultInstance()
-                            localRealm.executeTransaction {
-                                val localArtist = it.where(Artist::class.java)
-                                        .equalTo("name", name)
-                                        .findFirst()!!
-                                localArtist.spofityId = newId
-                            }
-
-                            spotifyAPI.searchSimilarArtists(newId)
-                                    .map {
-                                        it.artists.map {
-                                            Artist(name = it.name,
-                                                    spofityId = it.id,
-                                                    artworkUrl = it.images[1].url)
-                                        }
-                                    }
-                        } else {
-                            val matchingItem = items.find { it.name == name }
-                            if (matchingItem == null) {
-                                Single.error(IllegalStateException())
-                            } else {
-                                val newId = items[0].id
-                                val localRealm = Realm.getDefaultInstance()
-                                localRealm.executeTransaction {
-                                    val localArtist = it.where(Artist::class.java)
-                                            .equalTo("name", name)
-                                            .findFirst()!!
-                                    localArtist.spofityId = newId
-                                }
-
-                                spotifyAPI.searchSimilarArtists(newId)
-                                        .map {
-                                            it.artists.map {
-                                                Artist(name = it.name,
-                                                        spofityId = it.id,
-                                                        artworkUrl = it.images[1].url)
-                                            }
-                                        }
-                            }
-                        }
+        spotifyAPI.searchSimilarArtists(artist.spofityId!!)
+                .subscribeOn(Schedulers.io())
+                .delay(1, TimeUnit.SECONDS)
+                .map {
+                    it.artists.map {
+                        Artist(name = it.name,
+                                spofityId = it.id,
+                                artworkUrl = it.images.getOrNull(1)?.url ?: "")
                     }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe {
-                        compositeDisposable.add(it)
-                    }
-                    .subscribe({
-                        similarArtistsData.value = it
-                    }, {
-                        errorSimilarArtistsData.value = Unit
-                    })
-        } else {
-            spotifyAPI.searchSimilarArtists(spotifyId)
-                    .subscribeOn(Schedulers.io())
-                    .delay(1, TimeUnit.SECONDS)
-                    .map {
-                        it.artists.map {
-                            Artist(name = it.name,
-                                    spofityId = it.id,
-                                    artworkUrl = it.images.getOrNull(1)?.url ?: "")
-                        }
-                    }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe {
-                        compositeDisposable.add(it)
-                    }
-                    .subscribe(Consumer {
-                        similarArtistsData.value = it
-                    })
-        }
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe {
+                    compositeDisposable.add(it)
+                }
+                .subscribe(Consumer {
+                    similarArtistsData.value = it
+                })
     }
 }
 

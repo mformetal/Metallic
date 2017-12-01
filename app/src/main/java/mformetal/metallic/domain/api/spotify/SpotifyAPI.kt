@@ -17,6 +17,9 @@ interface SpotifyAPI {
     @GET("search?type=artist")
     fun searchArtist(@Query("q") artistName: String) : Single<ArtistsSearchResultWrapper>
 
+	@GET("albums/{id}")
+	fun getAlbum(@Path("id") id: String) : Single<SpotifyItem>
+
 	@GET("artists/{id}/albums")
 	fun getAlbumsofArtist(@Path("id") id: String) : Single<AlbumsQueryResult>
 
@@ -35,17 +38,16 @@ data class SimilarArtistsResult(
 )
 
 data class SpotifyArtist(
-        val genres: List<String>,
-        val id: String, //74Lk7WdgkYm19XoHvEsr5F
+        val id: String,
         val images: List<SpotifyImage>,
-        val name: String, //Mouth Of The Architect
-        val uri: String //spotify:artist:74Lk7WdgkYm19XoHvEsr5F
+        val name: String,
+        val uri: String
 )
 
 data class SpotifyImage(
-		val height: Int, //640
-		val url: String, //https://i.scdn.co/image/568d2c5ff8d7f1d8aa87394f7f55d4c9a112c524
-		val width: Int //640
+		val height: Int,
+		val url: String,
+		val width: Int
 )
 
 data class ArtistsSearchResultWrapper(
@@ -57,9 +59,10 @@ data class ArtistsSearchResult(
 )
 
 data class SpotifyItem(
-        val id: String, //52ue4x5xVjLx4cw2HEXMhi
+        val id: String,
         val images: List<SpotifyImage>,
-        val name: String //Hey Rosetta!
+        val name: String,
+		val release_date: String
 )
 
 data class AlbumsQueryResult(
