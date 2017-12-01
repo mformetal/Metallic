@@ -4,10 +4,10 @@ import android.app.Application
 import com.evernote.android.job.JobManager
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import mformetal.metallic.core.MetallicJobCreator
 import mformetal.metallic.dagger.AppComponent
 import mformetal.metallic.dagger.AppModule
 import mformetal.metallic.dagger.DaggerAppComponent
+import mformetal.metallic.dagger.WatchListJob
 import javax.inject.Inject
 
 /**
@@ -16,9 +16,6 @@ import javax.inject.Inject
 class App : Application() {
 
     lateinit var component : AppComponent
-
-    @Inject
-    lateinit var jobCreator : MetallicJobCreator
 
     override fun onCreate() {
         super.onCreate()
@@ -36,7 +33,7 @@ class App : Application() {
                 .build()
         component.injectMembers(this)
 
-        JobManager.create(this).addJobCreator(jobCreator)
+        WatchListJob.schedule()
     }
 }
 

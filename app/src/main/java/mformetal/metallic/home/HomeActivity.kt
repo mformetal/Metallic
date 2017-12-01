@@ -13,6 +13,8 @@ import android.view.Menu
 import android.view.ViewParent
 import butterknife.BindView
 import butterknife.ButterKnife
+import io.realm.RealmObject
+import io.realm.RealmRecyclerViewAdapter
 import mformetal.metallic.R
 import mformetal.metallic.core.BaseActivity
 import mformetal.metallic.data.Artist
@@ -96,14 +98,36 @@ class HomeActivity : BaseActivity() {
         val searchView = menu.findItem(R.id.action_search).actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-//                val results = viewModel.searchArtistsByName(query)
-//                adapter.updateData(results)
+                val adapter = recycler.adapter
+                val currentTab = tabLayout.getTabAt(tabLayout.selectedTabPosition)!!
+                when (currentTab.text) {
+                    getString(R.string.tab_artists) -> {
+                        (adapter as ArtistsAdapter).updateData(viewModel.searchArtistsByName(query))
+                    }
+                    getString(R.string.tab_albums) -> {
+                        (adapter as AlbumsAdapter).updateData(viewModel.searchAlbumsByName(query))
+                    }
+                    getString(R.string.tab_songs) -> {
+                        (adapter as SongsAdapter).updateData(viewModel.searchSongsByName(query))
+                    }
+                }
                 return true
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-//                val results = viewModel.searchArtistsByName(newText)
-//                adapter.updateData(results)
+                val adapter = recycler.adapter
+                val currentTab = tabLayout.getTabAt(tabLayout.selectedTabPosition)!!
+                when (currentTab.text) {
+                    getString(R.string.tab_artists) -> {
+                        (adapter as ArtistsAdapter).updateData(viewModel.searchArtistsByName(newText))
+                    }
+                    getString(R.string.tab_albums) -> {
+                        (adapter as AlbumsAdapter).updateData(viewModel.searchAlbumsByName(newText))
+                    }
+                    getString(R.string.tab_songs) -> {
+                        (adapter as SongsAdapter).updateData(viewModel.searchSongsByName(newText))
+                    }
+                }
                 return true
             }
         })

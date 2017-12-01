@@ -11,8 +11,3 @@ import android.view.WindowManager
  */
 val View.inflater : LayoutInflater
     get() = LayoutInflater.from(context)
-
-val Context.appScreenSize : Point
-    get() = Point().apply {
-        (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getSize(this)
-    }

@@ -25,7 +25,7 @@ import mformetal.metallic.util.inflater
  * @author - mbpeele on 11/23/17.
  */
 class ArtistsAdapter(val delegate: HomeAdapterClickDelegate,
-                     results: RealmResults<Artist>) : RealmRecyclerViewAdapter<Artist, ArtistsAdapter.ArtistViewHolder>(results, false) {
+                     results: RealmResults<Artist>) : RealmRecyclerViewAdapter<Artist, ArtistsAdapter.ArtistViewHolder>(results, true) {
 
     private var inflater : LayoutInflater?= null
 

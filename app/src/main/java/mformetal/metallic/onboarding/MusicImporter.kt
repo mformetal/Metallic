@@ -10,7 +10,6 @@ import io.realm.RealmList
 import mformetal.metallic.data.Album
 import mformetal.metallic.data.Artist
 import mformetal.metallic.data.Song
-import mformetal.metallic.util.doesNotContain
 import javax.inject.Inject
 
 /**
@@ -54,7 +53,7 @@ class MusicImporter @Inject constructor(context: Context) {
         val albums = RealmList<Album>()
 
         val albumCursor = contentResolver.query(ALBUMS_URI,
-                arrayOf("album_name", "album_artist", "album_art"),
+                arrayOf("album_name", "album_artist", "album_art", "album_year"),
                 null, null, null)
 
         albumCursor.use {
@@ -67,6 +66,7 @@ class MusicImporter @Inject constructor(context: Context) {
                     val album = Album(name = albumName,
                             artworkUrl = it.getString(it.getColumnIndex("album_art")),
                             songs = songs,
+                            yearReleased = it.getString(it.getColumnIndex("album_year")),
                             createdBy = artistName)
                     albums.add(album)
                 }

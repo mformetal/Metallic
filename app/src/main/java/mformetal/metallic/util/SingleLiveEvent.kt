@@ -18,7 +18,7 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
     @MainThread
     override fun observe(owner: LifecycleOwner, observer: Observer<T>) {
         // Observe the internal MutableLiveData
-        super.observe(owner, safeObserver {
+        super.observe(owner, Observer {
             if (mPending.compareAndSet(true, false)) {
                 observer.onChanged(it)
             }
@@ -29,10 +29,5 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
     override fun setValue(@Nullable t: T?) {
         mPending.set(true)
         super.setValue(t)
-    }
-
-    companion object {
-
-        private val TAG = "SingleLiveEvent"
     }
 }

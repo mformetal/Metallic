@@ -1,27 +1,19 @@
 package mformetal.metallic.core
 
+import com.evernote.android.job.DailyJob
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobCreator
+import com.evernote.android.job.JobRequest
+import mformetal.metallic.BuildConfig
+import mformetal.metallic.domain.api.spotify.SpotifyAPI
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Provider
 
 /**
  * Created by peelemil on 11/30/17.
  */
-class MetallicJobCreator @Inject constructor(): JobCreator {
+class MetallicJobCreator @Inject constructor(private val map: Map<String, @JvmSuppressWildcards Provider<Job>>): JobCreator {
 
-    override fun create(tag: String): Job? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-}
-
-class MetallicSyncJob @Inject constructor(): Job() {
-    override fun onRunJob(params: Params): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    companion object {
-        fun scheduleJob() {
-            TODO()
-        }
-    }
+    override fun create(tag: String): Job? = map[tag]!!.get()
 }

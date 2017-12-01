@@ -17,6 +17,7 @@ open class Artist(
 
 open class Album(
         var name: String ?= null,
+        var yearReleased: String ?= null,
         var createdBy: String ?= null,
         var spofityId: String ?= null,
         var artworkUrl: String ?= null,

@@ -7,6 +7,6 @@
 
     <item
         android:id="@+id/remove_from_watch_list"
-        android:title="@string/home_artist_item_menu_add_watchlist" />
+        android:title="@string/home_artist_item_menu_remove_watchlist" />
 
 </menu>

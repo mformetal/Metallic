@@ -32,6 +32,18 @@ class HomeViewModel @Inject constructor(): ViewModel() {
                 .findAllSortedAsync("name", Sort.ASCENDING)
     }
 
+    fun searchAlbumsByName(query: String) : RealmResults<Album> {
+        return realm.where(Album::class.java)
+                .contains("name", query, Case.INSENSITIVE)
+                .findAllSortedAsync("name", Sort.ASCENDING)
+    }
+
+    fun searchSongsByName(query: String) : RealmResults<Song> {
+        return realm.where(Song::class.java)
+                .contains("name", query, Case.INSENSITIVE)
+                .findAllSortedAsync("name", Sort.ASCENDING)
+    }
+
     fun addArtistToWatchList(artist: Artist) {
         if (!artist.isWatching) {
             realm.executeTransaction {

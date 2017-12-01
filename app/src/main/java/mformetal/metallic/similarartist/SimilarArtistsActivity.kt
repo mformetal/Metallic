@@ -146,27 +146,6 @@ class SimilarArtistsActivity : BaseActivity() {
                         }
                     })
                 })
-
-        viewModel.observeClarifyArtists()
-                .observe(this, safeObserver { artists ->
-                    val items = arrayOfNulls<CharSequence>(artists.size)
-                    for (i in artists.indices) {
-                        val item = artists[i].name
-                        items[i] = item
-                    }
-
-                    AlertDialog.Builder(this)
-                            .setItems(items, { dialogInterface, index ->
-                                dialogInterface.dismiss()
-
-                                val clarifyingArtist = artists[index]
-                                viewModel.onClarifyingArtistClicked(clarifyingArtist)
-                            })
-                            .setTitle(getString(R.string.clarify_artist_dialog_title, viewModel.currentArtist.name))
-                            .setCancelable(false)
-                            .create()
-                            .show()
-                })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
