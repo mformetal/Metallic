@@ -9,6 +9,8 @@ import mformetal.metallic.home.HomeActivityComponent
 import mformetal.metallic.home.HomeModule
 import mformetal.metallic.onboarding.OnboardingActivityComponent
 import mformetal.metallic.onboarding.OnboardingActivityModule
+import mformetal.metallic.watchlist.WatchListComponent
+import mformetal.metallic.watchlist.WatchListModule
 import javax.inject.Singleton
 
 @Component(modules = arrayOf(AppModule::class))
@@ -20,5 +22,7 @@ interface AppComponent : MembersInjector<App> {
     fun home(homeModule: HomeModule) : HomeActivityComponent
 
     fun artistDetail(artistDetailModule: SimilarArtistModule) : SimilarArtistsComponent
+
+    fun watchList(watchListModule: WatchListModule) : WatchListComponent
 
 }

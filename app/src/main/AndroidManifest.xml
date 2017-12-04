@@ -29,6 +29,11 @@
             android:name=".similarartist.SimilarArtistsActivity" >
         </activity>
 
+        <activity
+            android:name=".watchlist.WatchListActivity"
+            android:launchMode="singleTop" >
+        </activity>
+
     </application>
 
 </manifest>

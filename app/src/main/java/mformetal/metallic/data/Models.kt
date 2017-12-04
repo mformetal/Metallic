@@ -28,3 +28,9 @@ open class Song(
         var onAlbum: String ?= null,
         var createdBy: String ?= null,
         var spofityId: String ?= null) : RealmObject()
+
+open class NewArtist(
+        var name: String ?= null,
+        var spofityId: String ?= null,
+        var artworkUrl: String ?= null,
+        var albums: RealmList<Album> ?= null) : RealmObject()

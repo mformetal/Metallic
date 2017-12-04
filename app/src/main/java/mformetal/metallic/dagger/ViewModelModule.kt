@@ -8,6 +8,7 @@ import dagger.multibindings.IntoMap
 import mformetal.metallic.similarartist.SimilarArtistsViewModel
 import mformetal.metallic.home.HomeViewModel
 import mformetal.metallic.onboarding.OnboardingViewModel
+import mformetal.metallic.watchlist.WatchListViewModel
 
 @Module
 abstract class ViewModelModule {
@@ -26,6 +27,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(SimilarArtistsViewModel::class)
     abstract fun bindArtistDetailViewModel(similarArtistsViewModel: SimilarArtistsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(WatchListViewModel::class)
+    abstract fun bindWatchListViewModel(watchListViewModel: WatchListViewModel): ViewModel
 
     @Binds
     abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory

@@ -59,8 +59,10 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
                             realm.executeTransactionAsync({
                                 it.insertOrUpdate(artist)
                             }, {
+                                realm.close()
                                 emitter.onSuccess(artist)
                             }, {
+                                realm.close()
                                 emitter.onError(it)
                             })
                         }

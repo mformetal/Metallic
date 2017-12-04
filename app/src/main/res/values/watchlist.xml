@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="watch_list_notification_content">Found new music for you!</string>
+    <string name="watch_list_toolbar_title">New Releases</string>
+    <string name="watch_list_artist_dialog_title">%s recently released…</string>
+
+</resources>
