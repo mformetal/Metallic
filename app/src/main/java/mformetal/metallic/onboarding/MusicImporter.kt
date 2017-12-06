@@ -1,6 +1,7 @@
 package mformetal.metallic.onboarding
 
 import android.content.Context
+import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import io.reactivex.BackpressureStrategy
@@ -22,6 +23,7 @@ class MusicImporter @Inject constructor(context: Context) {
     private val ARTISTS_URI = BASE_URI.buildUpon().appendPath("artists").build()
     private val ALBUMS_URI = BASE_URI.buildUpon().appendPath("album").build()
     private val SONGS_URI = BASE_URI.buildUpon().appendPath("audio").build()
+    private val albumsCursor : Cursor ?= null
 
     fun getArtists() : Flowable<Artist> {
        return Flowable.create<Artist>({

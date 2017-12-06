@@ -1,38 +1,35 @@
 package mformetal.metallic.dagger
 
-import com.evernote.android.job.DailyJob
-import com.evernote.android.job.Job
-import com.evernote.android.job.JobRequest
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.functions.BiFunction
-import io.realm.Realm
-import mformetal.metallic.data.Artist
-import mformetal.metallic.domain.api.spotify.AlbumsQueryResult
-import mformetal.metallic.domain.api.spotify.SpotifyAPI
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import android.content.Context.NOTIFICATION_SERVICE
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
 import android.support.v4.app.NotificationCompat
+import com.evernote.android.job.Job
+import com.evernote.android.job.JobRequest
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.realm.Realm
 import io.realm.RealmList
-import io.realm.RealmObject
 import mformetal.metallic.BuildConfig
 import mformetal.metallic.R
+import mformetal.metallic.core.PreferencesRepository
 import mformetal.metallic.data.Album
+import mformetal.metallic.data.Artist
 import mformetal.metallic.data.NewArtist
+import mformetal.metallic.domain.api.spotify.SpotifyAPI
 import mformetal.metallic.home.HomeActivity
 import mformetal.metallic.watchlist.WatchListActivity
+import java.io.IOException
+import javax.inject.Inject
 
 
 /**
  * Created by peelemil on 12/1/17.
  */
-class WatchListJob @Inject constructor(private val spotifyAPI: SpotifyAPI): Job() {
+class WatchListJob @Inject constructor(private val spotifyAPI: SpotifyAPI,
+                                       private val preferencesRepository: PreferencesRepository): Job() {
 
     companion object {
         const val TAG = "watchListJob"
@@ -46,25 +43,28 @@ class WatchListJob @Inject constructor(private val spotifyAPI: SpotifyAPI): Job(
     }
 
     override fun onRunJob(params: Params): Result {
+        if (!preferencesRepository.hasUserOnboarded()) {
+            return Result.RESCHEDULE
+        }
+
         val realm = Realm.getDefaultInstance()
         val watchedArtists = realm.where(Artist::class.java)
-                    .equalTo("isWatching", true)
-                    .findAll()
+                .equalTo("isWatching", true)
+                .isNotNull("spotifyId")
+                .findAll()
 
         var result : Result ?= null
 
         Observable.fromIterable(watchedArtists)
-                .filter {
-                    it.spofityId != null
-                }
+                .take(25)
                 .flatMapSingle { artist ->
-                    val query = spotifyAPI.getAlbumsofArtist(artist.spofityId!!).blockingGet()
+                    val query = spotifyAPI.getAlbumsofArtist(artist.spotifyId!!).blockingGet()
                     Single.just(query to artist)
                 }
                 .map { (query, artist) ->
                     val newArtist = NewArtist(
                             name = artist.name,
-                            spofityId = artist.spofityId,
+                            spotifyId = artist.spotifyId,
                             artworkUrl = artist.artworkUrl,
                             albums = RealmList())
                     val albums = artist.albums ?: listOf<Album>()
@@ -75,7 +75,7 @@ class WatchListJob @Inject constructor(private val spotifyAPI: SpotifyAPI): Job(
                                 Album(name = it.name,
                                         yearReleased = it.release_date,
                                         createdBy = artist.name,
-                                        spofityId = it.id,
+                                        spotifyId = it.id,
                                         artworkUrl = it.images.getOrNull(1)?.url ?: ""
                                 )
                             }
@@ -86,40 +86,45 @@ class WatchListJob @Inject constructor(private val spotifyAPI: SpotifyAPI): Job(
                 .toList()
                 .doOnEvent { newArtists, throwable ->
                     if (throwable == null) {
-                        result = Result.FAILURE
-                    } else {
-                        realm.use {
-                            result = try {
-                                it.delete(NewArtist::class.java)
-                                it.insertOrUpdate(newArtists)
-                                Result.SUCCESS
-                            } catch (exception: Exception) {
-                                Result.FAILURE
-                            }
+                        result = try {
+                            realm.beginTransaction()
+                            realm.delete(NewArtist::class.java)
+                            realm.insertOrUpdate(newArtists)
+                            realm.commitTransaction()
+                            Result.SUCCESS
+                        } catch (e: IOException) {
+                            Result.FAILURE
+                        } finally {
+                            realm.close()
                         }
+                    } else {
+                        realm.close()
+                        result = Result.FAILURE
                     }
                 }
                 .blockingGet()
 
-        val notificationBuilder = NotificationCompat.Builder(context, BuildConfig.APPLICATION_ID)
-                .setSmallIcon(R.drawable.music_note_24dp)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setContentText(context.getString(R.string.watch_list_notification_content))
-        val resultIntent = Intent(context, WatchListActivity::class.java)
+        if (result == Result.SUCCESS) {
+            val notificationBuilder = NotificationCompat.Builder(context, BuildConfig.APPLICATION_ID)
+                    .setSmallIcon(R.drawable.music_note_24dp)
+                    .setContentTitle(context.getString(R.string.app_name))
+                    .setContentText(context.getString(R.string.watch_list_notification_content))
+            val resultIntent = Intent(context, WatchListActivity::class.java)
 
-        val stackBuilder = TaskStackBuilder.create(context)
-        stackBuilder.addParentStack(HomeActivity::class.java)
-        stackBuilder.addNextIntent(resultIntent)
-        val resultPendingIntent = stackBuilder.getPendingIntent(
-                0,
-                PendingIntent.FLAG_UPDATE_CURRENT)
-        notificationBuilder.setContentIntent(resultPendingIntent)
-        val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val stackBuilder = TaskStackBuilder.create(context)
+            stackBuilder.addParentStack(HomeActivity::class.java)
+            stackBuilder.addNextIntent(resultIntent)
+            val resultPendingIntent = stackBuilder.getPendingIntent(
+                    0,
+                    PendingIntent.FLAG_UPDATE_CURRENT)
+            notificationBuilder.setContentIntent(resultPendingIntent)
+            val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // mNotificationId is a unique integer your app uses to identify the
-        // notification. For example, to cancel the notification, you can pass its ID
-        // number to NotificationManager.cancel().
-        mNotificationManager.notify(0, notificationBuilder.build())
+            // mNotificationId is a unique integer your app uses to identify the
+            // notification. For example, to cancel the notification, you can pass its ID
+            // number to NotificationManager.cancel().
+            mNotificationManager.notify(0, notificationBuilder.build())
+        }
 
         return result!!
     }

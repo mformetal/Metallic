@@ -4,10 +4,7 @@ import android.app.Application
 import com.evernote.android.job.JobManager
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import mformetal.metallic.dagger.AppComponent
-import mformetal.metallic.dagger.AppModule
-import mformetal.metallic.dagger.DaggerAppComponent
-import mformetal.metallic.dagger.WatchListJob
+import mformetal.metallic.dagger.*
 import javax.inject.Inject
 
 /**
@@ -17,6 +14,8 @@ class App : Application() {
 
     lateinit var component : AppComponent
 
+    // For Dagger...
+    @Suppress("unused")
     @Inject
     lateinit var jobManager : JobManager
 
@@ -37,6 +36,7 @@ class App : Application() {
         component.injectMembers(this)
 
         WatchListJob.schedule()
+        SyncJob.schedule()
     }
 }
 

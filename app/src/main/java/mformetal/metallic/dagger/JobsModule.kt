@@ -7,8 +7,8 @@ import dagger.Provides
 import dagger.multibindings.IntoMap
 import dagger.multibindings.StringKey
 import mformetal.metallic.App
-import mformetal.metallic.BuildConfig
 import mformetal.metallic.core.MetallicJobCreator
+import mformetal.metallic.core.PreferencesRepository
 import mformetal.metallic.domain.api.spotify.SpotifyAPI
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -33,5 +33,12 @@ class JobsModule {
     @Provides
     @IntoMap
     @StringKey(WatchListJob.TAG)
-    fun watchListJob(spotifyAPI: SpotifyAPI) : Job = WatchListJob(spotifyAPI)
+    fun watchListJob(spotifyAPI: SpotifyAPI, preferencesRepository: PreferencesRepository) : Job
+            = WatchListJob(spotifyAPI, preferencesRepository)
+
+    @Provides
+    @IntoMap
+    @StringKey(SyncJob.TAG)
+    fun syncJob(spotifyAPI: SpotifyAPI, preferencesRepository: PreferencesRepository) : Job
+            = SyncJob(spotifyAPI, preferencesRepository)
 }
