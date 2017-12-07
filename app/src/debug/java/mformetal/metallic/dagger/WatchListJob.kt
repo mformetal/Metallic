@@ -53,10 +53,7 @@ class WatchListJob @Inject constructor(private val spotifyAPI: SpotifyAPI,
                 .isNotNull("spotifyId")
                 .findAll()
 
-        var result : Result ?= null
-
-        Observable.fromIterable(watchedArtists)
-                .take(25)
+        val newArtists = Observable.fromIterable(watchedArtists)
                 .flatMapSingle { artist ->
                     val query = spotifyAPI.getAlbumsofArtist(artist.spotifyId!!).blockingGet()
                     Single.just(query to artist)
@@ -84,25 +81,19 @@ class WatchListJob @Inject constructor(private val spotifyAPI: SpotifyAPI,
                     newArtist
                 }
                 .toList()
-                .doOnEvent { newArtists, throwable ->
-                    if (throwable == null) {
-                        result = try {
-                            realm.beginTransaction()
-                            realm.delete(NewArtist::class.java)
-                            realm.insertOrUpdate(newArtists)
-                            realm.commitTransaction()
-                            Result.SUCCESS
-                        } catch (e: IOException) {
-                            Result.FAILURE
-                        } finally {
-                            realm.close()
-                        }
-                    } else {
-                        realm.close()
-                        result = Result.FAILURE
-                    }
-                }
                 .blockingGet()
+
+        val result = try {
+            realm.beginTransaction()
+            realm.delete(NewArtist::class.java)
+            realm.insertOrUpdate(newArtists)
+            realm.commitTransaction()
+            Result.SUCCESS
+        } catch (e: IOException) {
+            Result.FAILURE
+        } finally {
+            realm.close()
+        }
 
         if (result == Result.SUCCESS) {
             val notificationBuilder = NotificationCompat.Builder(context, BuildConfig.APPLICATION_ID)
@@ -126,6 +117,6 @@ class WatchListJob @Inject constructor(private val spotifyAPI: SpotifyAPI,
             mNotificationManager.notify(0, notificationBuilder.build())
         }
 
-        return result!!
+        return result
     }
 }

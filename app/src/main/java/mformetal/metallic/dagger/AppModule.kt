@@ -8,8 +8,12 @@ import mformetal.metallic.App
 import mformetal.metallic.R
 import mformetal.metallic.core.PreferencesRepository
 import mformetal.metallic.core.SharedPreferencesRepository
+import mformetal.metallic.data.ArtistRepository
+import mformetal.metallic.data.RealmArtistRepository
 import mformetal.metallic.domain.api.spotify.SpotifyAPI
 import mformetal.metallic.domain.api.spotify.SpotifyAuthInterceptor
+import mformetal.metallic.onboarding.MusicImporter
+import mformetal.metallic.onboarding.PlayMusicImporter
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -44,6 +48,14 @@ class AppModule(private val app: App) {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
     }
+
+    @Provides
+    @Singleton
+    fun musicImporter() : MusicImporter = PlayMusicImporter(app)
+
+    @Provides
+    @Singleton
+    fun artistRepository() : ArtistRepository = RealmArtistRepository()
 
     @Provides
     @Singleton

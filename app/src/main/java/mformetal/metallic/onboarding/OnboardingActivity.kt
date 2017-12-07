@@ -1,17 +1,14 @@
 package mformetal.metallic.onboarding
 
-import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.LayerDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -27,7 +24,6 @@ import butterknife.ButterKnife
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import mformetal.metallic.R
@@ -75,6 +71,10 @@ class OnboardingActivity : BaseActivity() {
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
+            grantUriPermission(packageName,
+                    Uri.parse("content://com.google.android.music.MusicContent"),
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
             viewModel.import()
         } else {
             ActivityCompat.requestPermissions(this,
