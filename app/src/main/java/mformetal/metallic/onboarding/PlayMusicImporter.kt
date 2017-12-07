@@ -1,15 +1,20 @@
 package mformetal.metallic.onboarding
 
 import android.content.Context
+import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposables
+import io.reactivex.functions.Consumer
+import io.reactivex.functions.Function
 import io.realm.RealmList
 import mformetal.metallic.data.Album
 import mformetal.metallic.data.Artist
 import mformetal.metallic.data.Song
+import mformetal.metallic.util.RxCursorIterable
+import java.util.concurrent.Callable
 import javax.inject.Inject
 
 /**
@@ -24,29 +29,22 @@ class PlayMusicImporter @Inject constructor(context: Context) : MusicImporter {
     private val SONGS_URI = BASE_URI.buildUpon().appendPath("audio").build()
 
     override fun getArtists() : Flowable<Artist> {
-       return Flowable.create<Artist>({
-           val cursor = contentResolver.query(ARTISTS_URI,
-                   arrayOf("artist", "artworkUrl"),
-                   null, null, null)
+        return Flowable.using(
+                {
+                    contentResolver.query(ARTISTS_URI, arrayOf("artist", "artworkUrl"), null, null, null)
+                }, { cursor ->
+                    Flowable.fromIterable(RxCursorIterable(cursor))
+                            .map { innerCursor ->
+                                val artistName = innerCursor.getString(innerCursor.getColumnIndex("artist"))
 
-           it.setDisposable(Disposables.fromRunnable {
-               cursor.close()
-           })
-
-           while (!cursor.isClosed && cursor.moveToNext()) {
-               val artistName = cursor.getString(cursor.getColumnIndex("artist"))
-
-               val albums = getAlbums(artistName)
-               val artist = Artist(name = artistName,
-                       artworkUrl = cursor.getString(cursor.getColumnIndex("artworkUrl")),
-                       albums = albums)
-               it.onNext(artist)
-           }
-
-           cursor.close()
-
-           it.onComplete()
-        }, BackpressureStrategy.LATEST)
+                                val albums = getAlbums(artistName)
+                                Artist(name = artistName,
+                                        artworkUrl = innerCursor.getString(innerCursor.getColumnIndex("artworkUrl")),
+                                        albums = albums)
+                            }
+                }, { cursor ->
+                    cursor.close()
+                }, true)
     }
 
     override fun getAlbums(artistName: String) : RealmList<Album> {
@@ -60,7 +58,7 @@ class PlayMusicImporter @Inject constructor(context: Context) : MusicImporter {
                 null, null, null)
 
         albumCursor.use {
-            while (it.moveToNext() && !it.isClosed) {
+            while (!it.isClosed && it.moveToNext()) {
                 val albumArtist = it.getString(it.getColumnIndex("album_artist"))
                 if (albumArtist == artistName) {
                     val albumName = it.getString(it.getColumnIndex("album_name"))
@@ -88,7 +86,7 @@ class PlayMusicImporter @Inject constructor(context: Context) : MusicImporter {
                 arrayOf(artistName, albumName), null)
 
         songsCursor.use {
-            while (it.moveToNext()) {
+            while (!it.isClosed && it.moveToNext()) {
                 val songTitle = it.getString(it.getColumnIndex(MediaStore.Audio.Media.TITLE))
 
                 val song = Song(name = songTitle,

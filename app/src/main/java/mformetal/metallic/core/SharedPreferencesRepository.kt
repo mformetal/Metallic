@@ -14,9 +14,9 @@ class SharedPreferencesRepository @Inject constructor(private val sharedPreferen
 
     override fun hasUserOnboarded() : Boolean = sharedPreferences.getBoolean(HAS_ONBOARDED_KEY, false)
 
-    override fun setHasOnboarded() {
+    override fun setHasOnboarded(hasOnboarded: Boolean) {
         sharedPreferences.edit()
-                .putBoolean(HAS_ONBOARDED_KEY, true)
+                .putBoolean(HAS_ONBOARDED_KEY, hasOnboarded)
                 .apply()
     }
 }

@@ -10,7 +10,7 @@ import javax.inject.Inject
 /**
  * Created by mbpeele on 11/17/17.
  */
-class App : Application() {
+open class App : Application() {
 
     lateinit var component : AppComponent
 
@@ -29,14 +29,19 @@ class App : Application() {
                         .build()
         )
 
-        component = DaggerAppComponent
-                .builder()
-                .appModule(AppModule(this))
-                .build()
+        component = createAppComponent()
         component.injectMembers(this)
 
         WatchListJob.schedule()
         SyncJob.schedule()
     }
+
+    protected open fun createAppComponent() : AppComponent {
+        return DaggerAppComponent
+                .builder()
+                .appModule(AppModule(this))
+                .build()
+    }
+
 }
 

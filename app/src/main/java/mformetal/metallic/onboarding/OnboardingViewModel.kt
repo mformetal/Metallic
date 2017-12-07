@@ -55,7 +55,7 @@ class OnboardingViewModel @Inject constructor(private val importer: MusicImporte
                         importStatusLiveData.postValue(ImportStatus.START)
                     }
                     .doOnComplete {
-                        preferencesRepository.setHasOnboarded()
+                        preferencesRepository.setHasOnboarded(true)
                         importStatusLiveData.postValue(ImportStatus.FINISH)
                     }
                     .subscribe {

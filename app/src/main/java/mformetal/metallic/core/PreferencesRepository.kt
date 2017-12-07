@@ -7,5 +7,5 @@ interface PreferencesRepository {
 
     fun hasUserOnboarded() : Boolean
 
-    fun setHasOnboarded()
+    fun setHasOnboarded(hasOnboarded: Boolean)
 }
