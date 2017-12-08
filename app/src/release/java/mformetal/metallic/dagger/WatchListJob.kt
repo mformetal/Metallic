@@ -102,6 +102,7 @@ class WatchListJob @Inject constructor(
         if (result == Result.SUCCESS) {
             val notificationBuilder = NotificationCompat.Builder(context, BuildConfig.APPLICATION_ID)
                     .setSmallIcon(R.drawable.music_note_24dp)
+                    .setAutoCancel(true)
                     .setContentTitle(context.getString(R.string.app_name))
                     .setContentText(context.getString(R.string.watch_list_notification_content))
             val resultIntent = Intent(context, WatchListActivity::class.java)
