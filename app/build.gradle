@@ -75,4 +75,5 @@ dependencies {
     androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$espressoVersion"
     androidTestImplementation "com.android.support.test:runner:1.0.1"
     androidTestImplementation "com.willowtreeapps.assertk:assertk:0.9"
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }

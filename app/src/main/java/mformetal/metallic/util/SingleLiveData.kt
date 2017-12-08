@@ -1,12 +1,11 @@
 package mformetal.metallic.util
 
-import android.support.annotation.MainThread
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
+import android.support.annotation.MainThread
 import android.support.annotation.Nullable
 import java.util.concurrent.atomic.AtomicBoolean
-
 
 /**
  * https://github.com/googlesamples/android-architecture/blob/dev-todo-mvvm-live/todoapp/app/src/main/java/com/example/android/architecture/blueprints/todoapp/SingleLiveData.java
