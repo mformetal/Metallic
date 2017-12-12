@@ -6,11 +6,9 @@
         android:drawable="@color/colorPrimary" />
 
     <item
-        android:id="@+id/icon" >
-
-        <bitmap
-            android:src="@mipmap/ic_launcher"
-            android:gravity="center" />
+        android:id="@+id/icon"
+        android:drawable="@drawable/ic_music_note_black_24px"
+        android:gravity="center" >
 
     </item>
 
