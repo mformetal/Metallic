@@ -1,6 +1,6 @@
 package mformetal.metallic.util
 
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 
 /**
  * @author - mbpeele on 11/26/17.

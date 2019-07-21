@@ -1,7 +1,7 @@
 package mformetal.metallic.home
 
-import android.support.v4.view.ViewCompat
-import android.support.v7.widget.RecyclerView
+import androidx.core.view.ViewCompat
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +39,7 @@ class AlbumsAdapter(results: RealmResults<Album>) : RealmRecyclerViewAdapter<Alb
         holder.bind(album)
     }
 
-    inner class AlbumViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class AlbumViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         @BindView(R.id.album_name) lateinit var albumName: TextView
         @BindView(R.id.created_by) lateinit var albumArtist: TextView

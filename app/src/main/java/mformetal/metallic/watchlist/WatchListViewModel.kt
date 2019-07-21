@@ -1,6 +1,6 @@
 package mformetal.metallic.watchlist
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import io.realm.Realm
 import io.realm.RealmResults
 import mformetal.metallic.data.NewArtist

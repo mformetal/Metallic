@@ -2,11 +2,11 @@ package mformetal.metallic.util
 
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.support.annotation.ColorInt
-import android.support.annotation.FloatRange
-import android.support.annotation.IntDef
-import android.support.annotation.IntRange
-import android.support.v7.graphics.Palette
+import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
+import androidx.annotation.IntDef
+import androidx.annotation.IntRange
+import androidx.palette.graphics.Palette
 
 object ColorsUtils {
 
@@ -55,13 +55,13 @@ object ColorsUtils {
      * guaranteed to find the most populous color.
      */
     @Lightness
-    fun isDark(palette: Palette): Int {
+    fun isDark(palette: androidx.palette.graphics.Palette): Int {
         val mostPopulous = getMostPopulousSwatch(palette) ?: return LIGHTNESS_UNKNOWN
         return if (isDark(mostPopulous.hsl)) IS_DARK else IS_LIGHT
     }
 
-    fun getMostPopulousSwatch(palette: Palette?): Palette.Swatch? {
-        var mostPopulous: Palette.Swatch? = null
+    fun getMostPopulousSwatch(palette: androidx.palette.graphics.Palette?): androidx.palette.graphics.Palette.Swatch? {
+        var mostPopulous: androidx.palette.graphics.Palette.Swatch? = null
         if (palette != null) {
             for (swatch in palette.swatches) {
                 if (mostPopulous == null || swatch.population > mostPopulous.population) {
@@ -79,7 +79,7 @@ object ColorsUtils {
     @JvmOverloads
     fun isDark(bitmap: Bitmap, backupPixelX: Int = bitmap.width / 2, backupPixelY: Int = bitmap.height / 2): Boolean {
         // first try palette with a small color quant size
-        val palette = Palette.from(bitmap).maximumColorCount(3).generate()
+        val palette = androidx.palette.graphics.Palette.from(bitmap).maximumColorCount(3).generate()
         return if (palette.swatches.size > 0) {
             isDark(palette) == IS_DARK
         } else {
@@ -99,7 +99,7 @@ object ColorsUtils {
      */
     fun isDark(@ColorInt color: Int): Boolean {
         val hsl = FloatArray(3)
-        android.support.v4.graphics.ColorUtils.colorToHSL(color, hsl)
+        androidx.core.graphics.ColorUtils.colorToHSL(color, hsl)
         return isDark(hsl)
     }
 
@@ -118,7 +118,7 @@ object ColorsUtils {
                  @FloatRange(from = 0.0, to = 1.0) lightnessMultiplier: Float): Int {
         var multiplier = lightnessMultiplier
         val hsl = FloatArray(3)
-        android.support.v4.graphics.ColorUtils.colorToHSL(color, hsl)
+        androidx.core.graphics.ColorUtils.colorToHSL(color, hsl)
 
         if (isDark) {
             multiplier = 1f - multiplier
@@ -127,7 +127,7 @@ object ColorsUtils {
         }
 
         hsl[2] = Math.max(0f, Math.min(1f, hsl[2] * multiplier))
-        return android.support.v4.graphics.ColorUtils.HSLToColor(hsl)
+        return androidx.core.graphics.ColorUtils.HSLToColor(hsl)
     }
 
     @ColorInt

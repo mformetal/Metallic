@@ -1,6 +1,6 @@
 package mformetal.metallic.home
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import io.realm.Case
 import io.realm.Realm
 import io.realm.RealmResults

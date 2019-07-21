@@ -1,9 +1,9 @@
 package mformetal.metallic.home
 
 import android.app.Activity
-import android.support.v4.view.ViewCompat
-import android.support.v7.widget.PopupMenu
-import android.support.v7.widget.RecyclerView
+import androidx.core.view.ViewCompat
+import androidx.appcompat.widget.PopupMenu
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,7 +43,7 @@ class ArtistsAdapter(val delegate: HomeAdapterClickDelegate,
         holder.bind(artist)
     }
 
-    inner class ArtistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ArtistViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         @BindView(R.id.artist_name) lateinit var artistName : TextView
         @BindView(R.id.artist_image) lateinit var artistImage : ImageView

@@ -1,7 +1,7 @@
 package mformetal.metallic
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
-import android.arch.lifecycle.Observer
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.Observer
 import assertk.assert
 import assertk.assertions.isEqualTo
 import com.nhaarman.mockito_kotlin.*

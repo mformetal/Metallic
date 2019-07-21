@@ -2,8 +2,8 @@ package mformetal.metallic.onboarding
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -11,10 +11,10 @@ import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.animation.FastOutSlowInInterpolator
-import android.support.v7.graphics.Palette
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.palette.graphics.Palette
 import android.transition.Transition
 import android.view.View
 import android.widget.ImageView
@@ -135,7 +135,7 @@ class OnboardingActivity : BaseActivity() {
                 .listener(object : RequestListener<Bitmap> {
                     override fun onResourceReady(resource: Bitmap, model: Any?, target: Target<Bitmap>?,
                                                  dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                        Palette.from(resource)
+                        androidx.palette.graphics.Palette.from(resource)
                                 .maximumColorCount(3)
                                 .clearFilters()
                                 .generate { palette ->

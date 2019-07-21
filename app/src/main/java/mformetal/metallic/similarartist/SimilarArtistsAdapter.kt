@@ -1,6 +1,6 @@
 package mformetal.metallic.similarartist
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +19,7 @@ import mformetal.metallic.util.inflater
  */
 class SimilarArtistsAdapter(private val artists: List<Artist>,
                             private val delegate: SimilarArtistsAdapterClickDelegate)
-    : RecyclerView.Adapter<SimilarArtistsAdapter.SimilarArtistsViewHolder>() {
+    : androidx.recyclerview.widget.RecyclerView.Adapter<SimilarArtistsAdapter.SimilarArtistsViewHolder>() {
 
     private var inflater : LayoutInflater ?= null
 
@@ -40,7 +40,7 @@ class SimilarArtistsAdapter(private val artists: List<Artist>,
         holder.bind(artist)
     }
 
-    inner class SimilarArtistsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class SimilarArtistsViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         @BindView(R.id.artist_name) lateinit var artistName: TextView
         @BindView(R.id.artist_image) lateinit var artistImage: ImageView

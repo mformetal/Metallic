@@ -1,6 +1,6 @@
 package mformetal.metallic.watchlist
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +15,7 @@ import mformetal.metallic.R
 import mformetal.metallic.core.GlideApp
 import mformetal.metallic.data.NewArtist
 import mformetal.metallic.util.inflater
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 
 /**
  * Created by peelemil on 12/4/17.
@@ -39,7 +39,7 @@ class WatchListAdapter(results : RealmResults<NewArtist>)
         holder.bind(artist)
     }
 
-    inner class WatchlistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class WatchlistViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         @BindView(R.id.artist_name) lateinit var artistName : TextView
         @BindView(R.id.artist_image) lateinit var artistImage : ImageView

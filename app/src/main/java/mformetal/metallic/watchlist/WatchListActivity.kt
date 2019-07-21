@@ -1,11 +1,11 @@
 package mformetal.metallic.watchlist
 
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.appcompat.widget.Toolbar
 import butterknife.BindView
 import butterknife.ButterKnife
 import mformetal.metallic.R
@@ -19,7 +19,7 @@ import javax.inject.Inject
  */
 class WatchListActivity : BaseActivity() {
 
-    @BindView(R.id.recycler) lateinit var recycler : RecyclerView
+    @BindView(R.id.recycler) lateinit var recycler : androidx.recyclerview.widget.RecyclerView
     @BindView(R.id.toolbar) lateinit var toolbar : Toolbar
 
     @Inject
@@ -42,7 +42,7 @@ class WatchListActivity : BaseActivity() {
         viewModel = ViewModelProviders.of(this, factory)[WatchListViewModel::class.java]
 
         recycler.addItemDecoration(GridItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
-        recycler.layoutManager = GridLayoutManager(this, 2)
+        recycler.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 2)
         recycler.adapter =  WatchListAdapter(viewModel.newArtists)
     }
 }

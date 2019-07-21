@@ -1,6 +1,6 @@
 package mformetal.metallic.home
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,7 +35,7 @@ class SongsAdapter(results: RealmResults<Song>) : RealmRecyclerViewAdapter<Song,
         holder.bind(song)
     }
 
-    inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class SongViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         @BindView(R.id.song_name) lateinit var songName: TextView
         @BindView(R.id.created_by) lateinit var songArtist: TextView

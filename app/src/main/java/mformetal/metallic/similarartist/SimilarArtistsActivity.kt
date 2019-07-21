@@ -3,26 +3,26 @@ package mformetal.metallic.similarartist
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.app.Activity
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.content.ContextCompat
-import android.support.v4.util.Pair
-import android.support.v4.view.ViewCompat
-import android.support.v4.view.animation.FastOutSlowInInterpolator
-import android.support.v7.app.AlertDialog
-import android.support.v7.graphics.Palette
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.StaggeredGridLayoutManager
-import android.support.v7.widget.Toolbar
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
+import androidx.core.util.Pair
+import androidx.core.view.ViewCompat
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.appcompat.app.AlertDialog
+import androidx.palette.graphics.Palette
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.appcompat.widget.Toolbar
 import android.transition.Transition
 import android.view.*
 import android.view.animation.DecelerateInterpolator
@@ -57,7 +57,7 @@ class SimilarArtistsActivity : BaseActivity() {
     @BindView(R.id.artist_image) lateinit var image: ImageView
     @BindView(R.id.artist_name) lateinit var name: TextView
     @BindView(R.id.toolbar) lateinit var toolbar: Toolbar
-    @BindView(R.id.recycler) lateinit var recycler: RecyclerView
+    @BindView(R.id.recycler) lateinit var recycler: androidx.recyclerview.widget.RecyclerView
     @BindView(R.id.progress_bar) lateinit var progressBar: ProgressBar
 
     companion object {
@@ -115,7 +115,7 @@ class SimilarArtistsActivity : BaseActivity() {
         name.text = getString(R.string.artist_similar_to_current, artist.name)
 
         recycler.addItemDecoration(GridItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
-        recycler.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        recycler.layoutManager = androidx.recyclerview.widget.StaggeredGridLayoutManager(2, androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL)
 
         loadImage(artist)
 
@@ -167,7 +167,7 @@ class SimilarArtistsActivity : BaseActivity() {
                                                  dataSource: DataSource?, isFirstResource: Boolean): Boolean {
                         startPostponedEnterTransition()
 
-                        Palette.from(resource)
+                        androidx.palette.graphics.Palette.from(resource)
                                 .maximumColorCount(3)
                                 .clearFilters()
                                 .generate { palette ->

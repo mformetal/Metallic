@@ -1,6 +1,6 @@
 package mformetal.metallic.dagger
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import dagger.MapKey
 import javax.inject.Scope
 import kotlin.reflect.KClass

@@ -1,6 +1,6 @@
 package mformetal.metallic.onboarding
 
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -17,7 +17,7 @@ import android.support.test.espresso.intent.matcher.IntentMatchers
 import android.support.test.rule.ActivityTestRule
 import android.support.test.rule.GrantPermissionRule
 import android.support.test.runner.AndroidJUnit4
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

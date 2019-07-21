@@ -13,7 +13,7 @@ import mformetal.metallic.BuildConfig
 @GlideModule
 class GlideModule : AppGlideModule() {
 
-    override fun applyOptions(context: Context?, builder: GlideBuilder) {
+    override fun applyOptions(context: Context, builder: GlideBuilder) {
         if (BuildConfig.DEBUG) {
             builder.setLogLevel(LogLevel.DEBUG)
         }

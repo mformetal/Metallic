@@ -1,14 +1,14 @@
 package mformetal.metallic.home
 
 import android.app.SearchManager
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.TabLayout
-import android.support.v4.view.ViewPager
-import android.support.v7.widget.*
+import com.google.android.material.tabs.TabLayout
+import androidx.viewpager.widget.ViewPager
+import androidx.appcompat.widget.*
 import android.view.Menu
 import android.view.ViewParent
 import butterknife.BindView
@@ -35,7 +35,7 @@ class HomeActivity : BaseActivity() {
 
     @BindView(R.id.toolbar) lateinit var toolbar : Toolbar
     @BindView(R.id.tabs) lateinit var tabLayout : TabLayout
-    @BindView(R.id.recycler) lateinit var recycler : RecyclerView
+    @BindView(R.id.recycler) lateinit var recycler : androidx.recyclerview.widget.RecyclerView
 
     companion object {
         fun create(context: Context) : Intent = Intent(context, HomeActivity::class.java)
@@ -56,7 +56,7 @@ class HomeActivity : BaseActivity() {
         viewModel = ViewModelProviders.of(this, factory)[HomeViewModel::class.java]
 
         recycler.addItemDecoration(GridItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
-        recycler.layoutManager = GridLayoutManager(this, 2)
+        recycler.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 2)
         recycler.adapter =  ArtistsAdapter(clickDelegate, viewModel.artists)
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -70,21 +70,21 @@ class HomeActivity : BaseActivity() {
                         recycler.removeItemDecorationAt(0)
                         recycler.addItemDecoration(GridItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
 
-                        recycler.layoutManager = GridLayoutManager(this@HomeActivity, 2)
+                        recycler.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@HomeActivity, 2)
                         recycler.adapter = ArtistsAdapter(clickDelegate, viewModel.artists)
                     }
                     getString(R.string.tab_albums) -> {
                         recycler.removeItemDecorationAt(0)
                         recycler.addItemDecoration(GridItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
 
-                        recycler.layoutManager = GridLayoutManager(this@HomeActivity, 2)
+                        recycler.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@HomeActivity, 2)
                         recycler.adapter = AlbumsAdapter(viewModel.albums)
                     }
                     getString(R.string.tab_songs) -> {
                         recycler.removeItemDecorationAt(0)
                         recycler.addItemDecoration(VerticalItemDecoration(resources.getDimensionPixelOffset(R.dimen.spacing_normal)))
 
-                        recycler.layoutManager = LinearLayoutManager(this@HomeActivity)
+                        recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this@HomeActivity)
                         recycler.adapter = SongsAdapter(viewModel.songs)
                     }
                 }
