@@ -10,9 +10,9 @@ import android.support.v7.graphics.Palette
 
 object ColorsUtils {
 
-    const val IS_LIGHT = 0L
-    const val IS_DARK = 1L
-    const val LIGHTNESS_UNKNOWN = 2L
+    const val IS_LIGHT = 0
+    const val IS_DARK = 1
+    const val LIGHTNESS_UNKNOWN = 2
 
     /**
      * Set the alpha component of `color` to be `alpha`.
@@ -55,7 +55,7 @@ object ColorsUtils {
      * guaranteed to find the most populous color.
      */
     @Lightness
-    fun isDark(palette: Palette): Long {
+    fun isDark(palette: Palette): Int {
         val mostPopulous = getMostPopulousSwatch(palette) ?: return LIGHTNESS_UNKNOWN
         return if (isDark(mostPopulous.hsl)) IS_DARK else IS_LIGHT
     }

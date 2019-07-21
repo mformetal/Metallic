@@ -171,6 +171,8 @@ class SimilarArtistsActivity : BaseActivity() {
                                 .maximumColorCount(3)
                                 .clearFilters()
                                 .generate { palette ->
+                                    if (palette == null) return@generate
+
                                     @ColorsUtils.Lightness val lightness = ColorsUtils.isDark(palette)
                                     val isDark = if (lightness == ColorsUtils.LIGHTNESS_UNKNOWN) {
                                         ColorsUtils.isDark(resource, resource.width / 2, 0)

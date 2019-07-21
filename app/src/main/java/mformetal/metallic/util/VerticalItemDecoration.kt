@@ -9,7 +9,7 @@ import android.view.View
  */
 class VerticalItemDecoration(private val offset: Int) : RecyclerView.ItemDecoration() {
 
-    override fun getItemOffsets(outRect: Rect, view: View?, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         outRect.left = offset
         outRect.right = offset
         outRect.bottom = offset

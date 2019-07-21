@@ -19,7 +19,7 @@ class SpotifyAuthInterceptor(private val clientId: String,
         if (bearerToken.isEmpty()) {
             val authRequest = createAuthRequest()
             val authResponse = chain.proceed(authRequest)
-            val authResult = Gson().fromJson<SpotifyAuthResult>(authResponse.body()!!.string(), SpotifyAuthResult::class.java)
+            val authResult = Gson().fromJson<SpotifyAuthResult>(authResponse.body!!.string(), SpotifyAuthResult::class.java)
             bearerToken = "${authResult.token_type} ${authResult.access_token}"
         }
 

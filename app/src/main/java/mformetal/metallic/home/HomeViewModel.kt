@@ -17,9 +17,9 @@ class HomeViewModel @Inject constructor(): ViewModel() {
 
     private val realm : Realm = Realm.getDefaultInstance()
 
-    val artists : RealmResults<Artist> = realm.where(Artist::class.java).findAllSortedAsync("name", Sort.ASCENDING)
-    val albums : RealmResults<Album> = realm.where(Album::class.java).findAllSortedAsync("name", Sort.ASCENDING)
-    val songs : RealmResults<Song> = realm.where(Song::class.java).findAllSortedAsync("name", Sort.ASCENDING)
+    val artists : RealmResults<Artist> = realm.where(Artist::class.java).findAllAsync().sort("name", Sort.ASCENDING)
+    val albums : RealmResults<Album> = realm.where(Album::class.java).findAllAsync().sort("name", Sort.ASCENDING)
+    val songs : RealmResults<Song> = realm.where(Song::class.java).findAllAsync().sort("name", Sort.ASCENDING)
 
     override fun onCleared() {
         super.onCleared()
@@ -29,19 +29,22 @@ class HomeViewModel @Inject constructor(): ViewModel() {
     fun searchArtistsByName(query: String) : RealmResults<Artist> {
         return realm.where(Artist::class.java)
                 .contains("name", query, Case.INSENSITIVE)
-                .findAllSortedAsync("name", Sort.ASCENDING)
+                .findAllAsync()
+                .sort("name", Sort.ASCENDING)
     }
 
     fun searchAlbumsByName(query: String) : RealmResults<Album> {
         return realm.where(Album::class.java)
                 .contains("name", query, Case.INSENSITIVE)
-                .findAllSortedAsync("name", Sort.ASCENDING)
+                .findAllAsync()
+                .sort("name", Sort.ASCENDING)
     }
 
     fun searchSongsByName(query: String) : RealmResults<Song> {
         return realm.where(Song::class.java)
                 .contains("name", query, Case.INSENSITIVE)
-                .findAllSortedAsync("name", Sort.ASCENDING)
+                .findAllAsync()
+                .sort("name", Sort.ASCENDING)
     }
 
     fun addArtistToWatchList(artist: Artist) {

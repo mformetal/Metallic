@@ -139,6 +139,8 @@ class OnboardingActivity : BaseActivity() {
                                 .maximumColorCount(3)
                                 .clearFilters()
                                 .generate { palette ->
+                                    if (palette == null) return@generate
+                                    
                                     val decorView = window.decorView.background
                                     if (decorView is LayerDrawable) {
                                         val launcherIcon = decorView.findDrawableByLayerId(R.id.icon)

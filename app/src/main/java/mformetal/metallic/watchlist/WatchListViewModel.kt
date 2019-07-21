@@ -13,7 +13,9 @@ class WatchListViewModel @Inject constructor(): ViewModel() {
 
     private val realm = Realm.getDefaultInstance()
 
-    val newArtists : RealmResults<NewArtist> = realm.where(NewArtist::class.java).findAllSortedAsync("name")
+    val newArtists : RealmResults<NewArtist> = realm.where(NewArtist::class.java)
+            .findAllAsync()
+            .sort("name")
 
     override fun onCleared() {
         super.onCleared()
